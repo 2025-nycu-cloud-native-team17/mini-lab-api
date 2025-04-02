@@ -4,13 +4,14 @@ import { serverOf, serverStart } from './server';
 
 dotenv.config();
 
-const app = serverOf();
-
-const appConfig: AppConfig = {
+export const appConfig: AppConfig = {
   host: process.env.HOST || 'localhost',
   port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
-  mongoConnectionString: process.env.MONGO_CONNECTION_STRING || ''
+  mongoConnectionString: process.env.MONGO_CONNECTION_STRING || '',
+  jwt_secret: process.env.JWT_SECRET || '',
 };
+
+const app = serverOf();
 
 serverStart(appConfig)(app)
   .then(() => {
