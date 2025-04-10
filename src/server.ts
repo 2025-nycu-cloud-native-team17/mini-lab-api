@@ -3,12 +3,13 @@ import { AppConfig } from './types/config';
 import { establishConnection } from './plugins/mongodb';
 import { TodoRouter } from './routes/todo';
 import { MiniLabRouter } from './routes/mini_lab';
-
+import cookieParser from 'cookie-parser';
 export const serverOf: () => Express = () => {
   const app = express();
   
   // Middleware for parsing JSON
   app.use(express.json());
+  app.use(cookieParser());
 
   // Simple ping route
   app.get('/ping', async (req, res) => {

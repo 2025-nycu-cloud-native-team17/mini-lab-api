@@ -8,7 +8,8 @@ export const appConfig: AppConfig = {
   host: process.env.HOST || 'localhost',
   port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
   mongoConnectionString: process.env.MONGO_CONNECTION_STRING || '',
-  jwt_secret: process.env.JWT_SECRET || '',
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET || '',
+  refresh_token_secret: process.env.REFRESH_TOKEN_SECRET || '',
 };
 
 const app = serverOf();

@@ -1,8 +1,17 @@
-import { ModifyResult, UpdateQuery } from 'mongoose'
+import { Document, model, Schema, ModifyResult, UpdateQuery } from 'mongoose'
 
-import { MiniLabMachineModel, MiniLabTaskModel } from '../models/mini_lab'
+import { MiniLabUserModel, MiniLabMachineModel, MiniLabTaskModel } from '../models/mini_lab'
 import { Machine, MachineBody } from '../types/mini_lab'
 import { Task, TaskBody } from '../types/mini_lab'
+import { User, UserBody } from '../types/mini_lab'
+
+export interface MiniLabUserDocument extends Document, UserBody {}
+
+export const findUserByEmail: (email: string) => Promise<MiniLabUserDocument | null> = (email) => MiniLabUserModel.findOne({ email: email }).exec()
+
+export const findUserByToken: (refreshToken: string) => Promise<MiniLabUserDocument | null> = (refreshToken) => MiniLabUserModel.findOne({ refreshToken:refreshToken }).exec()
+
+export const updateUserByEmail: (email: string, update: UpdateQuery<UserBody>) => Promise<User | null> = (email, update) => MiniLabUserModel.findOneAndUpdate({ email }, update, { new: true }).exec()
 
 export const findAllMachines: () => Promise<Array<Machine>> = () => MiniLabMachineModel.find().exec()
 
