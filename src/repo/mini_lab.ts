@@ -11,7 +11,7 @@ export const findUserByEmail: (email: string) => Promise<MiniLabUserDocument | n
 
 export const findUserByToken: (refreshToken: string) => Promise<MiniLabUserDocument | null> = (refreshToken) => MiniLabUserModel.findOne({ refreshToken:refreshToken }).exec()
 
-export const updateUserByEmail: (email: string, update: UpdateQuery<UserBody>) => Promise<User | null> = (email, update) => MiniLabUserModel.findOneAndUpdate({ email }, update, { new: true }).exec()
+export const updateUserByEmail: (email: string, update: UpdateQuery<UserBody>) => Promise<MiniLabUserDocument | null> = (email, update) => MiniLabUserModel.findOneAndUpdate({ email }, update, { new: true }).exec()
 
 export const findAllMachines: () => Promise<Array<Machine>> = () => MiniLabMachineModel.find().exec()
 

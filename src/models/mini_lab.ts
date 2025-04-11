@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 import { Todo } from '../types/todo'
-import { UserStatus, TaskStatus, MachineStatus } from '../types/mini_lab' // Import enums
+import { UserStatus, TaskStatus, MachineStatus, UserBody } from '../types/mini_lab' // Import enums
 
 //name: 員工名稱
 //email: 員工信箱(公司分發)
@@ -134,6 +134,6 @@ miniLabTaskSchema.set('toJSON', {
   versionKey: false
 })
 
-export const MiniLabUserModel = mongoose.models.MiniLabUser || mongoose.model('MiniLabUser', miniLabUserSchema);
+export const MiniLabUserModel = mongoose.models.MiniLabUser || mongoose.model<UserBody>('MiniLabUser', miniLabUserSchema);
 export const MiniLabMachineModel = mongoose.models.MiniLabMachine || mongoose.model('MiniLabMachine', miniLabMachineSchema);
 export const MiniLabTaskModel = mongoose.models.MiniLabTask || mongoose.model('MiniLabTask', miniLabTaskSchema);

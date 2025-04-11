@@ -25,7 +25,7 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
       const accessToken = jwt.sign(
         { email: decoded.email },
         appConfig.access_token_secret,
-        { expiresIn: '2h' }
+        { expiresIn: '30s' }
       );
       res.json({ accessToken });
     }

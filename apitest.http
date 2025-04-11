@@ -6,8 +6,11 @@
 #   "password": "test"
 # }
 
-GET http://localhost:8888/api/v1/test_verifyJWT
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzEyOTQ3LCJleHAiOjE3NDQzMjAxNDd9.qg_kQHQOqtymuWvj2U995RjfrC7v_wtPFqureTNvctY
+# GET http://localhost:8888/api/v1/test_verifyJWT
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjY5LCJleHAiOjE3NDQzODg4Njl9.ib-rvhGNT-huZFywe1ImD23W5lagTOktnG0cDsGkkqg
 
 # GET http://localhost:8888/api/v1/refresh
-# Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzEyMzIxLCJleHAiOjE3NDQzOTg3MjF9.LtC8cDLEGEtdAXGGWlJ_A14HSuNLVAF3hgldtDtir2A
+# Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
+
+GET http://localhost:8888/api/v1/logout
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI

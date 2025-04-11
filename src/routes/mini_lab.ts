@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { appConfig } from '../index';
 import * as MiniLabService from '../services/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
-import { handleLogin } from '../services/auth';
+import { handleLogin, handleLogout } from '../services/auth';
 import { handleRefreshToken } from '../services/refreshToken';
 
 
@@ -11,12 +11,10 @@ export const MiniLabRouter: Router = express.Router();
 
 // debugging routes
 MiniLabRouter.get('/v1/test_route', async (req, res) => {
-  // console.log(appConfig.access_token_secret)
   return res.status(200).json({ msg: 'route work successfully!' });
 });
 
 MiniLabRouter.get('/v1/test_verifyJWT', verifyJWT, async (req, res) => {
-  // console.log(appConfig.access_token_secret)
   return res.status(200).json({ msg: 'verifyJWT successfully!' });
 });
 
@@ -29,14 +27,12 @@ MiniLabRouter.post('/v1/login', handleLogin);
 
 MiniLabRouter.get('/v1/refresh', handleRefreshToken);
 
-MiniLabRouter.post('/v1/logout', async (req, res) => {
-  return res.status(200).json({ msg: 'logout!' });
-});
+MiniLabRouter.get('/v1/logout', handleLogout)
 
+// 使用者相關 routes
 MiniLabRouter.get('/v1/user', verifyJWT, async (req, res) => {
   return res.status(200).json({ msg: 'user!' });
 }); 
-
 
 // 組長相關 routes
 MiniLabRouter.get('/v1/users', verifyJWT, async (req, res) => {

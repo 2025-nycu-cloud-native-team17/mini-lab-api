@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { appConfig } from '../index';
-import { findUserByEmail,  } from '../repo/mini_lab';
+import { findUserByEmail, findUserByToken,  } from '../repo/mini_lab';
 import bcrypt from 'bcrypt';
 
 export const handleLogin = async (req: Request, res: Response) => {
@@ -47,3 +47,22 @@ export const handleLogin = async (req: Request, res: Response) => {
       res.status(401).json({ message: 'Invalid credentials' });
   }
 }
+
+export const handleLogout = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+  if(!cookies?.jwt) return res.sendStatus(204); // No content
+  const refreshToken = cookies.jwt;
+
+  // is refreshToken in db?
+  const foundUser = await findUserByToken(refreshToken);
+  if(!foundUser) {
+    res.clearCookie('jwt', { httpOnly: true }); //清掉前端cookie
+    return res.sendStatus(204); // No content
+  }
+
+  // delete refreshToken in db
+  await foundUser.updateOne({ refreshToken: '' });
+  res.clearCookie('jwt', { httpOnly: true });
+  res.sendStatus(204);
+}
+  

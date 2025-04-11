@@ -9,12 +9,13 @@ export enum UserStatus {
 
 export type User = {
     id: string
-    name: string //員工名稱
-    email: string //員工信箱(公司分發)
-    password: string //員工密碼(假定在這系統不能自行改密碼)
-    role: string //員工角色(組長/組員)
-    testType: string //員工測試類型
-    inCharging: string[] //員工負責的測試
+    name: string //employee名稱
+    email: string //employee信箱(公司分發)
+    password: string //employee密碼(假定在這系統不能自行改密碼)
+    role: string //employee角色(組長/組員)
+    testType: string //employee測試類型
+    group: string //員工所屬group
+    inCharging: string[] //employee負責的測試
     status: UserStatus
     refreshToken: string //refresh token
 }
