@@ -1,10 +1,8 @@
 # mini-lab-api
 
-# Testing Lab
-
 ## Backend
 
-Fastify Server
+Express Server
 
 ### Set your environment variable
 
@@ -37,37 +35,4 @@ npm run dev
 
 ```bash
 npm run test
-```
-
-## Frontend
-
-React (by vite)
-
-### Development
-
-Install dependencies
-
-```bash
-npm install
-```
-
-Start development mode
-
-```bash
-cd frontend
-npm run dev
-```
-
-Visit <http://localhost:5173>
-
-### Run playwright test
-
-```bash
-npm run test:e2e
-```
-
-show playwright report
-
-```bash
-npx playwright show-report
 ```
