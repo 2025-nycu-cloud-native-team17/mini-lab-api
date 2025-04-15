@@ -21,12 +21,12 @@ export const handleLogin = async (req: Request, res: Response) => {
   if(match) {
     // create accessToken and refreshToken
     const accessToken = jwt.sign(
-      { email: foundUser.email},
+      { email: foundUser.email, role: foundUser.role },
       appConfig.access_token_secret,
-      { expiresIn: '30s' }
+      { expiresIn: '1h' }
     );
     const refreshToken = jwt.sign(
-      { email: foundUser.email},
+      { email: foundUser.email, role: foundUser.role },
       appConfig.refresh_token_secret,
       { expiresIn: '1d' }
     );

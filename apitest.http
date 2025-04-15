@@ -2,8 +2,8 @@
 # Content-Type: application/json
 
 # {
-#   "email": "test@gmail.com",
-#   "password": "test"
+#   "email": "alice@gmail.com",
+#   "password": "alice"
 # }
 
 # GET http://localhost:8888/api/v1/test_verifyJWT
@@ -12,5 +12,21 @@
 # GET http://localhost:8888/api/v1/refresh
 # Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
 
-GET http://localhost:8888/api/v1/logout
-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
+# GET http://localhost:8888/api/v1/logout
+# Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
+
+# POST http://localhost:8888/api/v1/user
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGdtYWlsLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0NzA4ODE3LCJleHAiOjE3NDQ3MTI0MTd9.9-Bt_stHOwH4hXlkM41wzWxgdN7cHQT0ghBgTdSgQf0
+# Content-Type: application/json
+
+# {
+#   "name": "Bob",
+#   "email": "bob@gmail.com",
+#   "password": "bob",
+#   "role": "member",
+#   "testType": "Electrical Testing",
+#   "status": "active"
+# }
+
+DELETE http://localhost:8888/api/v1/user/67fe1f19e992e77e13c025f5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGdtYWlsLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0NzA4ODE3LCJleHAiOjE3NDQ3MTI0MTd9.9-Bt_stHOwH4hXlkM41wzWxgdN7cHQT0ghBgTdSgQf0

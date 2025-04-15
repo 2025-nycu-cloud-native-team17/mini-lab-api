@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 import { Todo } from '../types/todo'
-import { UserStatus, TaskStatus, MachineStatus, UserBody } from '../types/mini_lab' // Import enums
+import { UserStatus, UserTestType, UserRole, TaskStatus, MachineStatus, UserBody } from '../types/mini_lab' // Import enums
 
 //name: 員工名稱
 //email: 員工信箱(公司分發)
@@ -27,21 +27,22 @@ const miniLabUserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['leader', 'member'], // Use enum for role
+      enum: Object.values(UserRole), // Use UserRole enum
       required: true
     },
     testType: {
       type: String,
-      required: true
-    },
-    inCharging: {
-      type: [String],
+      enum: Object.values(UserTestType), // Use UserTestType enum
       required: true
     },
     status: {
       type: String,
       enum: Object.values(UserStatus), // Use UserStatus enum
       required: true
+    },
+    inCharging: {
+      type: [String],
+      required: false
     },
     refreshToken: {
       type: String,

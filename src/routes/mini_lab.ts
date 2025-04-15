@@ -3,9 +3,11 @@ import jwt from 'jsonwebtoken';
 import { appConfig } from '../index';
 import * as MiniLabService from '../services/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
+import { requireManagerRole } from '../middleware/requireRole';
 import { handleLogin, handleLogout } from '../services/auth';
 import { handleRefreshToken } from '../services/refreshToken';
-
+import { handleRegisterMachine, handleRegisterUser } from '../services/register';
+import { handleDeleteMachine, handleDeleteUser } from '../services/delete';
 
 export const MiniLabRouter: Router = express.Router();
 
@@ -18,10 +20,11 @@ MiniLabRouter.get('/v1/test_verifyJWT', verifyJWT, async (req, res) => {
   return res.status(200).json({ msg: 'verifyJWT successfully!' });
 });
 
-//不一定實作
-MiniLabRouter.post('/v1/register', async (req, res) => {
-  return res.status(200).json({ msg: 'register!' });
-});
+MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, handleRegisterUser);
+MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, handleDeleteUser);
+
+MiniLabRouter.post('/v1/machine', verifyJWT, requireManagerRole, handleRegisterMachine);
+MiniLabRouter.delete('/v1/machine', verifyJWT, requireManagerRole, handleDeleteMachine);
 
 MiniLabRouter.post('/v1/login', handleLogin);
 
