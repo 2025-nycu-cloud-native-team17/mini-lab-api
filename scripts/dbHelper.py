@@ -5,7 +5,7 @@ import pymongo, yaml
 def get_args():
     parser = argparse.ArgumentParser(description="Insert data into the database")
     parser.add_argument("--file", type=str, help="Path to the YAML file containing data", required=True)
-    parser.add_argument("--table",  type=str, help="Name of the table to insert data into", required=True, choices=["MiniLabUser", "MiniLabMachine", "MiniLabTask"])  
+    parser.add_argument("--table",  type=str, help="Name of the table to insert data into", required=True, choices=["MiniLabUsers", "MiniLabMachines", "MiniLabTasks"])  
     parser.add_argument("--action", type=str, help="Action to perform on the data", required=True, choices=["show", "insert", "update", "delete", "delete_table"])
     
     # Have default values.
@@ -146,17 +146,19 @@ query:
 
 Insert:
 1. 在 data.yaml 裡面寫入資料 (可以 Copy 上面的範例, 僅需貼上 insertion 的部分)
-2. python dbHelper.py --file data.yaml --table MiniLabUser --action insert
+2. python dbHelper.py --file data.yaml --table MiniLabUsers --action insert
 
 Update, Delection 同理.
 
 Show: 
-1. python dbHelper.py --table MiniLabUser --action show
+1. python dbHelper.py --table MiniLabUsers --action show
 """
 if __name__ == "__main__":
     args = get_args()
     
     dbHelper = DbHelper(args.db, args.host, args.port)
+
+    print(args.table)
 
     if args.action == "show":
         dbHelper.show_data(args.table)

@@ -18,7 +18,7 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
   jwt.verify(
     refreshToken,
     appConfig.refresh_token_secret,
-    (err, decoded) => {
+    (err: any, decoded: any) => {
       if(err || foundUser.email !== decoded.email) {
         return res.status(403).json({ message: 'jwt is incorrect!' });
       }

@@ -2,11 +2,13 @@
 
 # 之後會刪掉這個檔案, 暫時存一些測試指令
 
+curl -X GET "http://localhost:8888/api/v1/test_route" \
+  -H "Content-Type: application/json"
 
 # login and get token
 curl -X POST "http://localhost:8888/api/v1/login" \
   -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "password"}'
+  -d '{"email": "user1@example.com", "password": "hashed_password_1"}'
 
 # Get all machines
 curl -X GET "http://localhost:8888/api/v1/machines" \

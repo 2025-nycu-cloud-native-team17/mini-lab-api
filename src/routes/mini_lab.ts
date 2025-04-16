@@ -31,120 +31,14 @@ MiniLabRouter.get('/v1/refresh', handleRefreshToken);
 MiniLabRouter.get('/v1/logout', handleLogout)
 
 
-MiniLabRouter.get('/v1/machines', verifyJWT, async (req, res) => {
-  try {
-    const machines = await MiniLabService.getMachines();
-    return res.status(200).json(machines);
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
+MiniLabRouter.get('/v1/machines', verifyJWT, MiniLabController.handleGetMachines);
+MiniLabRouter.post('/v1/machines', verifyJWT, MiniLabController.handleAddMachine);
+MiniLabRouter.put('/v1/machines/:id', verifyJWT, MiniLabController.handleUpdateMachineById);
+MiniLabRouter.put('/v1/machines/:id/:attribute', verifyJWT, MiniLabController.handleUpdateMachineAttributeById);
+MiniLabRouter.delete('/v1/machines/:id', verifyJWT, MiniLabController.handleDeleteMachineById);
 
-MiniLabRouter.post('/v1/machines', verifyJWT, async (req, res) => {
-  try {
-    const newMachine = await MiniLabService.addMachine(req.body);
-    return res.status(201).json(newMachine);
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.put('/v1/machines/:id', verifyJWT, async (req, res) => {
-  try {
-    const updatedMachine = await MiniLabService.updateMachineById(req.params.id, req.body);
-    if (updatedMachine) {
-      return res.status(200).json(updatedMachine);
-    } else {
-      return res.status(404).json({ msg: 'Machine not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.put('/v1/machines/:id/:attribute', verifyJWT, async (req, res) => {
-  try {
-    const updatedMachine = await MiniLabService.updateMachineAttributeById(req.params.id, req.params.attribute, req.body.value);
-    if (updatedMachine) {
-      return res.status(200).json(updatedMachine);
-    } else {
-      return res.status(404).json({ msg: 'Machine not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.delete('/v1/machines/:id', verifyJWT, async (req, res) => {
-  try {
-    const result = await MiniLabService.deleteMachineById(req.params.id);
-    if (result) {
-      return res.status(200).json({ msg: 'Machine deleted successfully', result });
-    } else {
-      return res.status(404).json({ msg: 'Machine not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-// task 相關 routes
-MiniLabRouter.get('/v1/tasks', verifyJWT, async (req, res) => {
-  try {
-    const tasks = await MiniLabService.getTasks();
-    return res.status(200).json(tasks);
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.post('/v1/tasks', verifyJWT, async (req, res) => {
-  try {
-    const newTask = await MiniLabService.addTask(req.body);
-    return res.status(201).json(newTask);
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.put('/v1/tasks/:id', verifyJWT, async (req, res) => {
-  try {
-    const updatedTask = await MiniLabService.updateTaskById(req.params.id, req.body);
-    if (updatedTask) {
-      return res.status(200).json(updatedTask);
-    } else {
-      return res.status(404).json({ msg: 'Task not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.put('/v1/tasks/:id/:attribute', verifyJWT, async (req, res) => {
-  try {
-    const updatedTask = await MiniLabService.updateTaskAttributeById(req.params.id, req.params.attribute, req.body.value);
-    if (updatedTask) {
-      return res.status(200).json(updatedTask);
-    } else {
-      return res.status(404).json({ msg: 'Task not found' }); // 錯誤訊息應該是 Task not found
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-MiniLabRouter.delete('/v1/tasks/:id', verifyJWT, async (req, res) => {
-  try {
-    const result = await MiniLabService.deleteTaskById(req.params.id);
-    if (result) {
-      return res.status(200).json({ msg: 'Task deleted successfully', result });
-    } else {
-      return res.status(404).json({ msg: 'Task not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: 'Internal server error', error });
-  }
-});
-
-
-
+MiniLabRouter.get('/v1/tasks', verifyJWT, MiniLabController.handleGetTasks);
+MiniLabRouter.post('/v1/tasks', verifyJWT, MiniLabController.handleAddTask);
+MiniLabRouter.put('/v1/tasks/:id', verifyJWT, MiniLabController.handleUpdateTaskById);
+MiniLabRouter.put('/v1/tasks/:id/:attribute', verifyJWT, MiniLabController.handleUpdateTaskAttributeById);
+MiniLabRouter.delete('/v1/tasks/:id', verifyJWT, MiniLabController.handleDeleteTaskById);

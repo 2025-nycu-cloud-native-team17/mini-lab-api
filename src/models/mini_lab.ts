@@ -50,7 +50,8 @@ const miniLabUserSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    collection: "MiniLabUsers" // Avoid confusion 
   }
 )
 miniLabUserSchema.set('toJSON', {
@@ -89,7 +90,8 @@ const miniLabMachineSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    collection: "MiniLabMachines" // Avoid confusion 
   }
 )
 miniLabMachineSchema.set('toJSON', {
@@ -127,7 +129,8 @@ const miniLabTaskSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    collection: "MiniLabTasks" // Avoid confusion 
   }
 )
 miniLabTaskSchema.set('toJSON', {
