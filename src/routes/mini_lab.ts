@@ -2,12 +2,11 @@ import express, { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { appConfig } from '../index';
 import * as MiniLabService from '../services/mini_lab';
+import * as MiniLabController from '../controllers/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
 import { requireManagerRole } from '../middleware/requireRole';
 import { handleLogin, handleLogout } from '../services/auth';
 import { handleRefreshToken } from '../services/refreshToken';
-import { handleRegisterMachine, handleRegisterUser } from '../services/register';
-import { handleDeleteMachine, handleDeleteUser } from '../services/delete';
 
 export const MiniLabRouter: Router = express.Router();
 
@@ -20,43 +19,17 @@ MiniLabRouter.get('/v1/test_verifyJWT', verifyJWT, async (req, res) => {
   return res.status(200).json({ msg: 'verifyJWT successfully!' });
 });
 
-MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, handleRegisterUser);
-MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, handleDeleteUser);
-
-MiniLabRouter.post('/v1/machine', verifyJWT, requireManagerRole, handleRegisterMachine);
-MiniLabRouter.delete('/v1/machine', verifyJWT, requireManagerRole, handleDeleteMachine);
+// employee 相關 routes
+MiniLabRouter.get('/v1/users', verifyJWT, MiniLabController.handleGetUsers)
+MiniLabRouter.get('/v1/user/:id', verifyJWT, MiniLabController.handleGetUserById);
+MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, MiniLabController.handleRegisterUser);
+MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, MiniLabController.handleDeleteUser);
+MiniLabRouter.put('/v1/users/:id', verifyJWT, MiniLabController.handleUpdateUser);
 
 MiniLabRouter.post('/v1/login', handleLogin);
-
 MiniLabRouter.get('/v1/refresh', handleRefreshToken);
-
 MiniLabRouter.get('/v1/logout', handleLogout)
 
-// 使用者相關 routes
-MiniLabRouter.get('/v1/user', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'user!' });
-}); 
-
-// 組長相關 routes
-MiniLabRouter.get('/v1/users', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'users!' });
-});
-
-MiniLabRouter.post('/v1/users', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'add user!' });
-});
-
-MiniLabRouter.put('/v1/users/:id', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'update user!' });
-});
-
-MiniLabRouter.put('/v1/users/:id/:attribute', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'update user!' });
-});
-
-MiniLabRouter.delete('/v1/users/:id', verifyJWT, async (req, res) => {
-  return res.status(200).json({ msg: 'delete user!' });
-});
 
 MiniLabRouter.get('/v1/machines', verifyJWT, async (req, res) => {
   try {
@@ -115,7 +88,7 @@ MiniLabRouter.delete('/v1/machines/:id', verifyJWT, async (req, res) => {
   }
 });
 
-// 任務相關 routes
+// task 相關 routes
 MiniLabRouter.get('/v1/tasks', verifyJWT, async (req, res) => {
   try {
     const tasks = await MiniLabService.getTasks();
