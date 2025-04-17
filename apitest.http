@@ -1,32 +1,74 @@
-# POST http://localhost:8888/api/v1/login
-# Content-Type: application/json
+### manager
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDBlYjZmMDM5ZjUyYTNhYzZiMTQwYiIsImVtYWlsIjoidXNlcjFAZXhhbXBsZS5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDkwMDc2MSwiZXhwIjoxNzQ0OTA0MzYxfQ.77glQAxsVmYAs7kdar5QwVYmEWOEIR1ToPtyD72xLVM
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDBlYjZmMDM5ZjUyYTNhYzZiMTQwYiIsImVtYWlsIjoidXNlcjFAZXhhbXBsZS5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDkwMDc2MSwiZXhwIjoxNzQ0OTg3MTYxfQ.I00d0wKcdE5v5oonRH4yNPagWBNQ4D3NNMFBZluyMkc
 
-# {
-#   "email": "alice@gmail.com",
-#   "password": "alice"
-# }
+### leader
+# @refreshToken = 
+# @accessToken = 
 
-# GET http://localhost:8888/api/v1/test_verifyJWT
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjY5LCJleHAiOjE3NDQzODg4Njl9.ib-rvhGNT-huZFywe1ImD23W5lagTOktnG0cDsGkkqg
+###
+GET http://localhost:8888/api/v1/test_route
 
-# GET http://localhost:8888/api/v1/refresh
-# Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
+### 
+POST http://localhost:8888/api/v1/login
+Content-Type: application/json
 
-# GET http://localhost:8888/api/v1/logout
-# Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzgxNjIzLCJleHAiOjE3NDQ0NjgwMjN9.e6yQl0alCvJMacXUmCeCm2uNs4rPVJsOFZ6e227zITI
+{
+  "email": "user1@example.com",
+  "password": "user1"
+}
 
-# POST http://localhost:8888/api/v1/user
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGdtYWlsLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0NzA4ODE3LCJleHAiOjE3NDQ3MTI0MTd9.9-Bt_stHOwH4hXlkM41wzWxgdN7cHQT0ghBgTdSgQf0
-# Content-Type: application/json
+###
+GET http://localhost:8888/api/v1/logout
+Cookie: refreshToken={{refreshToken}}
 
-# {
-#   "name": "Bob",
-#   "email": "bob@gmail.com",
-#   "password": "bob",
-#   "role": "member",
-#   "testType": "Electrical Testing",
-#   "status": "active"
-# }
+###
+GET http://localhost:8888/api/v1/refresh
+Cookie: refreshToken={{refreshToken}}
 
-DELETE http://localhost:8888/api/v1/user/67fe1f19e992e77e13c025f5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGdtYWlsLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0NzA4ODE3LCJleHAiOjE3NDQ3MTI0MTd9.9-Bt_stHOwH4hXlkM41wzWxgdN7cHQT0ghBgTdSgQf0
+###
+GET http://localhost:8888/api/v1/test_verifyJWT
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8888/api/v1/users
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8888/api/v1/user/6800eb6f039f52a3ac6b140b
+Authorization: Bearer {{accessToken}}
+
+###
+POST http://localhost:8888/api/v1/user
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "userId": "0004",
+    "name": "add",
+    "email": "add@example.com",
+    "password": "add",
+    "role": "manager",
+    "testType": "Physical Property Testing",
+    "status": "active"
+}
+
+###
+DELETE  http://localhost:8888/api/v1/user/680112c024a8cf6964f6ab32
+Authorization: Bearer {{accessToken}}
+
+###
+PUT http://localhost:8888/api/v1/user/680112c024a8cf6964f6ab32
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "userId": "0004",
+    "name": "add",
+    "email": "add@example.com",
+    "password": "add",
+    "role": "manager",
+    "testType": "Physical Property Testing",
+    "status": "active"
+}
+

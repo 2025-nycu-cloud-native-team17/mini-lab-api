@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as MiniLabService from '../services/mini_lab';
 import { access } from 'fs';
+import { console } from 'inspector';
 
 export const handleLogin = async (req: Request, res: Response) => {
   try{
@@ -12,7 +13,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     }
     const Tokens = await MiniLabService.login(email, password);
     const { accessToken, refreshToken } = Tokens;
-    res.cookie('jwt', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         // secure: true, // set to true if using https
         // sameSite: 'strict', // set to 'none' if using cross-site cookies
@@ -28,12 +29,12 @@ export const handleLogin = async (req: Request, res: Response) => {
 export const handleLogout = async (req: Request, res: Response) => {
     try{
         const cookies = req.cookies;
-        if(!cookies?.jwt) return res.sendStatus(204); // No content
+        if(!cookies?.refreshToken) return res.sendStatus(204); // No content
 
-        const refreshToken = cookies.jwt;
+        const refreshToken = cookies.refreshToken;
         await MiniLabService.logout(refreshToken); // 交給 service 清掉DB裡的refreshToken
         
-        res.clearCookie('jwt', { httpOnly: true }); // 清掉 cookie 裡的 refreshToken
+        res.clearCookie('refreshToken', { httpOnly: true }); // 清掉 cookie 裡的 refreshToken
         return res.sendStatus(204);
     }catch(err: any) {
         return res.status(401).json({ message: err.message || 'Logout failed' });
@@ -43,11 +44,11 @@ export const handleLogout = async (req: Request, res: Response) => {
 export const handleRefreshToken = async (req: Request, res: Response) => {
     try {
       const cookie = req.cookies;
-      if (!cookie?.jwt) {
+      if (!cookie?.refreshToken) {
         return res.status(401).json({ message: 'No refresh token in cookies' });
       }
   
-      const refreshToken = cookie.jwt;
+      const refreshToken = cookie.refreshToken;
       const accessToken = await MiniLabService.refreshAccessToken(refreshToken);
       return res.status(200).json({ accessToken });
   
@@ -69,6 +70,7 @@ export const handleRegisterUser = async (req: Request, res: Response) => {
 export const handleDeleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    // console.log(id);
     await MiniLabService.deleteUser(id);
     return res.status(200).json({ message: 'User deleted successfully' });
   } catch (err: any) {
@@ -80,6 +82,13 @@ export const handleUpdateUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const updates = req.body; // Partial<UserBody>
+        
+        // 檢查修改目標和發出請求的人是否為同一人
+        // manager有權限改所有user資料
+        console.log(req.user);
+        if(req.user?.id !== id && req.user?.role !== 'manager') {
+            return res.status(403).json({ message: 'You can only modify your own profile' });
+        }
 
         const updatedUser = await MiniLabService.updateUser(id, updates);
 

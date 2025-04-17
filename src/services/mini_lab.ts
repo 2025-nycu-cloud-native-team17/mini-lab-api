@@ -65,7 +65,7 @@ type Token = {
 };
 export const login: (email: string, password: string) => Promise<Token> = async (email, password) => {
   const foundUser = await repo.findUserByEmail(email);
-  console.log(foundUser);
+  // console.log(foundUser);
   if(!foundUser) {
     throw new Error('Login failed, User not found');
   }
@@ -79,12 +79,12 @@ export const login: (email: string, password: string) => Promise<Token> = async 
   }
   // create accessToken and refreshToken
   const accessToken = jwt.sign(
-    { _id: foundUser.id.toString(),
+    { id: foundUser.id.toString(),
       email: foundUser.email,
       role: foundUser.role }, appConfig.access_token_secret,{ expiresIn: '1h' });
   
   const refreshToken = jwt.sign(
-    { _id: foundUser.id.toString(),
+    { id: foundUser.id.toString(),
       email: foundUser.email,
       role: foundUser.role }, appConfig.refresh_token_secret, { expiresIn: '1d' });
 
@@ -108,10 +108,11 @@ export const logout: (refreshToken: string) => Promise<void> = async (refreshTok
 
 export const refreshAccessToken = async (refreshToken: string): Promise<string> => {
   const foundUser = await repo.findUserByToken(refreshToken);
+  console.log(refreshToken)
+  console.log(foundUser)
   if (!foundUser) {
     throw new Error('Refresh token not found');
   }
-
   return new Promise<string>((resolve, reject) => {
     jwt.verify(
       refreshToken,
@@ -122,11 +123,10 @@ export const refreshAccessToken = async (refreshToken: string): Promise<string> 
         }
 
         const accessToken = jwt.sign(
-          { id: foundUser.id.toString(), email: foundUser.email, role: foundUser.role },
-          appConfig.access_token_secret,
-          { expiresIn: '30s' }
-        );
-
+          { id: foundUser.id.toString(), 
+            email: foundUser.email, 
+            role: foundUser.role }, appConfig.access_token_secret, { expiresIn: '1h' });
+        
         resolve(accessToken);
       }
     );
@@ -137,7 +137,7 @@ export const getUsers = async (): Promise<User[]> => {
   const docs = await repo.findAllUsers();
 
   return docs.map(doc => {
-    const { _id, password, refreshToken, ...rest } = doc.toObject();
+    const { _id, password, email, role, status, refreshToken, ...rest } = doc.toObject();
     return {
       id: _id.toString(),
       ...rest,
@@ -174,6 +174,7 @@ export const addUser: (userBody: UserBody) => Promise<User> = async (userBody) =
       throw new Error('Invalid status');
     }
 
+    // Check if user already exists
     const existingUser = await repo.findUserByEmail(userBody.email);
     if (existingUser) {
       throw new Error('User already exists');
@@ -194,6 +195,7 @@ export const addUser: (userBody: UserBody) => Promise<User> = async (userBody) =
 
 export const deleteUser: (id: string) => Promise<void> = async (id) => {
   const result = await repo.deleteUserById(id)
+  // console.log(result)
   if (!result) {
     throw new Error('User not found');
   }
@@ -219,7 +221,7 @@ export const updateUser: (id: string, update: Partial<UserBody>) => Promise<User
 
     const obj = updated.toObject();
     return {
-      id: updated.id.toString(),
+      // id: updated.id.toString(),
       ...obj,
     };
   };

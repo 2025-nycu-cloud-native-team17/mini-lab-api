@@ -1,9 +1,9 @@
 // Modify this in your develop environment if you need;
 db = db.getSiblingDB('myMernApp');
 db.MiniLabUsers.insertMany([
-    {name: "user1", email: "user1@example.com", role: "manager", testType: "Physical Property Testing", inCharging: [], status: "active", refreshToken: ""},
-    {name: "user2", email: "user2@example.com", role: "leader", testType: "Thermal Testing", inCharging: ["Task1", "Task2"], status: "active", refreshToken: ""},
-    {name: "user3", email: "user3@example.com", role: "member", testType: "Electrical Testing", inCharging: ["Task1", "Task2"], status: "active", refreshToken: ""},
+    {userId:"0001", name: "user1", email: "user1@example.com", password:"user1", role: "manager", testType: "Physical Property Testing", inCharging: [], status: "active", refreshToken: ""},
+    {userId:"0002", name: "user2", email: "user2@example.com", password:"user2", role: "leader", testType: "Thermal Testing", inCharging: ["Task1", "Task2"], status: "active", refreshToken: ""},
+    {userId:"0003", name: "user3", email: "user3@example.com", password:"user3", role: "member", testType: "Electrical Testing", inCharging: ["Task1", "Task2"], status: "active", refreshToken: ""},
 ]);
 
 db.MiniLabMachines.insertMany([

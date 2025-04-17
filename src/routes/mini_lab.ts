@@ -22,7 +22,7 @@ MiniLabRouter.get('/v1/users', verifyJWT, MiniLabController.handleGetUsers)
 MiniLabRouter.get('/v1/user/:id', verifyJWT, MiniLabController.handleGetUserById);
 MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, MiniLabController.handleRegisterUser);
 MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, MiniLabController.handleDeleteUser);
-MiniLabRouter.put('/v1/users/:id', verifyJWT, MiniLabController.handleUpdateUser);
+MiniLabRouter.put('/v1/user/:id', verifyJWT, MiniLabController.handleUpdateUser);
 
 MiniLabRouter.post('/v1/login', MiniLabController.handleLogin);
 MiniLabRouter.get('/v1/logout', MiniLabController.handleLogout);

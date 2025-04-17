@@ -1,7 +1,7 @@
 // data type for user
 export enum UserStatus {
     ACTIVE = 'active',
-    INACTIVE = 'inactive',
+    // INACTIVE = 'inactive',
     BLOCKED = 'blocked', //請假
     DELETED = 'deleted', //離職(固定一個月清理一次離職人員資料)
     PENDING = 'pending', //待審核(新員工)
