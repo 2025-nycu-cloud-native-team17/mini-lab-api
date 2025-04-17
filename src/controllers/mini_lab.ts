@@ -1,5 +1,60 @@
 import { Request, Response, NextFunction } from 'express';
 import * as MiniLabService from '../services/mini_lab';
+import { access } from 'fs';
+
+export const handleLogin = async (req: Request, res: Response) => {
+  try{
+    const { email, password } = req.body;
+    console.log(email);
+    console.log(password);
+    if(!email || !password) {
+        return res.status(400).json({ message: 'email and password are required' });
+    }
+    const Tokens = await MiniLabService.login(email, password);
+    const { accessToken, refreshToken } = Tokens;
+    res.cookie('jwt', refreshToken, {
+        httpOnly: true,
+        // secure: true, // set to true if using https
+        // sameSite: 'strict', // set to 'none' if using cross-site cookies
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
+    res.json({ accessToken });
+  }catch(err: any) {
+    console.log(err);
+    return res.status(401).json({ message: err.message || 'Login failed' });
+  }
+}
+
+export const handleLogout = async (req: Request, res: Response) => {
+    try{
+        const cookies = req.cookies;
+        if(!cookies?.jwt) return res.sendStatus(204); // No content
+
+        const refreshToken = cookies.jwt;
+        await MiniLabService.logout(refreshToken); // 交給 service 清掉DB裡的refreshToken
+        
+        res.clearCookie('jwt', { httpOnly: true }); // 清掉 cookie 裡的 refreshToken
+        return res.sendStatus(204);
+    }catch(err: any) {
+        return res.status(401).json({ message: err.message || 'Logout failed' });
+    }
+}
+
+export const handleRefreshToken = async (req: Request, res: Response) => {
+    try {
+      const cookie = req.cookies;
+      if (!cookie?.jwt) {
+        return res.status(401).json({ message: 'No refresh token in cookies' });
+      }
+  
+      const refreshToken = cookie.jwt;
+      const accessToken = await MiniLabService.refreshAccessToken(refreshToken);
+      return res.status(200).json({ accessToken });
+  
+    } catch (err: any) {
+      return res.status(403).json({ message: err.message || 'Refresh token invalid' });
+    }
+  };
 
 export const handleRegisterUser = async (req: Request, res: Response) => {
     try {

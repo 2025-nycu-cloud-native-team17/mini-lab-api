@@ -5,8 +5,6 @@ import * as MiniLabService from '../services/mini_lab';
 import * as MiniLabController from '../controllers/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
 import { requireManagerRole } from '../middleware/requireRole';
-import { handleLogin, handleLogout } from '../services/auth';
-import { handleRefreshToken } from '../services/refreshToken';
 
 export const MiniLabRouter: Router = express.Router();
 
@@ -26,9 +24,9 @@ MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, MiniLabController.
 MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, MiniLabController.handleDeleteUser);
 MiniLabRouter.put('/v1/users/:id', verifyJWT, MiniLabController.handleUpdateUser);
 
-MiniLabRouter.post('/v1/login', handleLogin);
-MiniLabRouter.get('/v1/refresh', handleRefreshToken);
-MiniLabRouter.get('/v1/logout', handleLogout)
+MiniLabRouter.post('/v1/login', MiniLabController.handleLogin);
+MiniLabRouter.get('/v1/logout', MiniLabController.handleLogout);
+MiniLabRouter.get('/v1/refresh', MiniLabController.handleRefreshToken);
 
 
 MiniLabRouter.get('/v1/machines', verifyJWT, MiniLabController.handleGetMachines);

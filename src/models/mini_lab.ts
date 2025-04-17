@@ -12,6 +12,11 @@ import { UserStatus, UserTestType, UserRole, TaskStatus, MachineStatus, UserBody
 //status: 員工狀態
 const miniLabUserSchema = new mongoose.Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     name: {
       type: String,
       required: true

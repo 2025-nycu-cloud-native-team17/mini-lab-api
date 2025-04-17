@@ -21,13 +21,14 @@ export enum UserTestType {
 
 export type User = {
     id: string
+    userId: string //employee編號
     name: string //employee名稱
     email: string //employee信箱(公司分發)
     password: string //employee密碼(假定在這系統不能自行改密碼)
     role: UserRole //employee角色(組長/組員)
     testType: UserTestType //employee測試類型
     status: UserStatus //employee狀態
-    
+
     inCharging: string[] //employee負責的測試
     refreshToken: string //refresh token
 }

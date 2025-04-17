@@ -1,9 +1,12 @@
 import { ModifyResult } from 'mongoose'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import * as repo from '../repo/mini_lab'
 import { User, UserBody, Machine, MachineBody, Task, TaskBody } from '../types/mini_lab'
 import { UserRole, UserTestType, UserStatus } from '../types/mini_lab'
+import { appConfig } from '../index';
+
 
 export const getMachines: () => Promise<Array<Machine>> = async () => {
   const machines = await repo.findAllMachines()
@@ -54,6 +57,81 @@ export const deleteTaskById: (id: string) => Promise<ModifyResult<Task>> = async
   const result = await repo.deleteTaskById(id)
   return result
 }
+
+//-----------------------User---------------------- //
+type Token = {
+  accessToken: string;
+  refreshToken: string;
+};
+export const login: (email: string, password: string) => Promise<Token> = async (email, password) => {
+  const foundUser = await repo.findUserByEmail(email);
+  console.log(foundUser);
+  if(!foundUser) {
+    throw new Error('Login failed, User not found');
+  }
+
+  // 因為DB裡保存的password都有加密過，比對前要先解密
+  // const match = await bcrypt.compare(password, foundUser.password);
+  
+  const match = password === foundUser.password;
+  if(!match) {
+    throw new Error('Login failed, Invalid password');
+  }
+  // create accessToken and refreshToken
+  const accessToken = jwt.sign(
+    { _id: foundUser.id.toString(),
+      email: foundUser.email,
+      role: foundUser.role }, appConfig.access_token_secret,{ expiresIn: '1h' });
+  
+  const refreshToken = jwt.sign(
+    { _id: foundUser.id.toString(),
+      email: foundUser.email,
+      role: foundUser.role }, appConfig.refresh_token_secret, { expiresIn: '1d' });
+
+  // save refreshToken to db
+  await foundUser.updateOne({ refreshToken: refreshToken });
+
+  return {accessToken, refreshToken};
+}
+
+export const logout: (refreshToken: string) => Promise<void> = async (refreshToken) => {
+  // is refreshToken in db?
+  const foundUser = await repo.findUserByToken(refreshToken);
+  
+  if(!foundUser) {
+    return;
+  }
+
+  // delete refreshToken in db
+  await foundUser.updateOne({ refreshToken: '' });
+}
+
+export const refreshAccessToken = async (refreshToken: string): Promise<string> => {
+  const foundUser = await repo.findUserByToken(refreshToken);
+  if (!foundUser) {
+    throw new Error('Refresh token not found');
+  }
+
+  return new Promise<string>((resolve, reject) => {
+    jwt.verify(
+      refreshToken,
+      appConfig.refresh_token_secret,
+      (err, decoded) => {
+        if (err || typeof decoded !== 'object' || foundUser.email !== decoded.email) {
+          return reject(new Error('Refresh token verification failed'));
+        }
+
+        const accessToken = jwt.sign(
+          { id: foundUser.id.toString(), email: foundUser.email, role: foundUser.role },
+          appConfig.access_token_secret,
+          { expiresIn: '30s' }
+        );
+
+        resolve(accessToken);
+      }
+    );
+  });
+};
 
 export const getUsers = async (): Promise<User[]> => {
   const docs = await repo.findAllUsers();
