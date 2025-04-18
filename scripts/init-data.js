@@ -12,9 +12,8 @@ db.MiniLabMachines.insertMany([
     {name: "Machine3", description:"Physical Property Testing", count: 5, status: "available", testType: "Physical Property Testing"},
 ]);
 
-
 db.MiniLabTasks.insertMany([
-    {name: "Task1", description: "Thermal Test Task", testType: "Thermal Testing", inCharging: ["user2"], status: "pending"},
-    {name: "Task2", description: "Electrical Test Task", testType: "Electrical Testing", inCharging: ["user3"], status: "in progress"},
-    {name: "Task3", description: "Physical Property Test Task", testType: "Physical Property Testing", inCharging: ["user1"], status: "completed"},
+    {name: "Task1", description: "Thermal Test Task", testType: "Thermal Testing", inCharging: ["user2"], status: "pending",  timestamps : "2025-04-17T14:10:00.000Z", dueDate: "2025-04-20T00:00:00.000Z" },
+    {name: "Task2", description: "Electrical Test Task", testType: "Electrical Testing", inCharging: ["user3"], status: "in progress",  timestamps: "2025-04-17T14:10:00.000Z", dueDate: "2025-04-20T00:00:00.000Z" },
+    {name: "Task3", description: "Physical Property Test Task", testType: "Physical Property Testing", inCharging: ["user1"], status: "completed",  timestamps: "2025-04-17T14:10:00.000Z", dueDate: "2025-04-20T00:00:00.000Z"},
 ]);

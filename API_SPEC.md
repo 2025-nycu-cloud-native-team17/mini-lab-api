@@ -325,8 +325,303 @@ Connection: close
   "status": "active",
   "inCharging": [],
   "refreshToken": "",
-  "createdAt": "2025-04-17T14:40:00.921Z",
+  "timestamps": "2025-04-17T14:40:00.921Z",
   "updatedAt": "2025-04-17T14:44:06.019Z",
   "__v": 0
 }
+```
+
+##### GET /v1/machines:
+* 功能描述: 撈回所有 machine (只傳回特定屬性)。
+* INPUT: 把 accessToken 放在 Header 裡頭送過來。
+* OUTPUT: 所有 machine 資料。
+* Http Code:
+    * 200 OK
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken"
+```
+GET http://localhost:8888/api/v1/machines
+Authorization: Bearer {accessToken}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "id": "m001",
+    "name": "Thermal Chamber",
+    "description": "High‑precision thermal cycling device",
+    "testType": "Thermal Testing",
+    "count": 3,
+    "status": "in_progress",
+    "timestamps": "2025-04-17T13:50:00.000Z"
+    "updatedAt": "2025-04-17T14:44:06.019Z",
+  },
+  ...
+]
+```
+
+##### POST /v1/machines:
+* 功能描述: 新增 machine (只有 manager 權限)。
+* INPUT: Header 帶入 accessToken，Body JSON 含 name、description、testType。
+* OUTPUT: 新增 machine 資料。
+* Http Code:
+    * 201 Created
+    * 400 Bad Request: "Name, description, and testType are required" / "Invalid testType"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken" / "Only managers can perform this action"
+```
+POST http://localhost:8888/api/v1/machines
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "Humidity Chamber",
+  "description": "Controlled humidity environment",
+  "testType": "Physical Property Testing"
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "id": "m002",
+  "name": "Humidity Chamber",
+  "description": "Controlled humidity environment",
+  "testType": "Physical Property Testing",
+  "count": 0,
+  "status": "idle",
+  "timestamps": "2025-04-17T15:00:00.000Z"
+  "updatedAt": "2025-04-17T14:44:06.019Z",
+}
+```
+
+##### PUT /v1/machines/:id:
+* 功能描述: 修改特定 machine (full update)。
+* INPUT: Header 帶入 accessToken，Body JSON 含 name、description、testType、status。
+* OUTPUT: 修改後的 machine 資料。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Invalid testType" / "Invalid status"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken"
+    * 404 Not Found: "Machine not found"
+```
+PUT http://localhost:8888/api/v1/machines/m001
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "Thermal Chamber Pro",
+  "description": "Upgraded thermal cycling device",
+  "testType": "Thermal Testing",
+  "status": "in_progress"
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "id": "m001",
+  "name": "Thermal Chamber Pro",
+  "description": "Upgraded thermal cycling device",
+  "testType": "Thermal Testing",
+  "count": 3,
+  "status": "in_progress",
+  "timestamps": "2025-04-17T13:50:00.000Z"
+  "updatedAt": "2025-04-17T14:44:06.019Z",
+}
+```
+
+##### PUT /v1/machines/:id/:attribute:
+* 功能描述: 更新 machine 的單一屬性 (attribute)。
+* INPUT: Header 帶入 accessToken，Body JSON 含該 attribute 的新值。
+* OUTPUT: 修改後的 machine 屬性資料。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Invalid attribute" / "Invalid value"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken"
+    * 404 Not Found: "Machine not found"
+```
+PUT http://localhost:8888/api/v1/machines/m001/count
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{ "count": 5 }
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{ "id": "m001", "count": 5 }
+```
+
+##### DELETE /v1/machines/:id:
+* 功能描述: 刪除特定 machine。
+* INPUT: 把 accessToken 放在 Header 裡頭送過來。
+* OUTPUT: 刪除回應訊息。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Machine not found"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken"
+```
+DELETE http://localhost:8888/api/v1/machines/m002
+Authorization: Bearer {accessToken}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{ "message": "Machine deleted successfully" }
+```
+
+##### GET /v1/tasks:
+* 功能描述: 撈回所有 task (只傳回特定屬性)。
+* OUTPUT: 所有 task 資料。
+* Http Code:
+    * 200 OK
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken"
+```
+GET http://localhost:8888/api/v1/tasks
+Authorization: Bearer {accessToken}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "id": "t001",
+    "name": "Temp Ramp Test",
+    "description": "Run temperature ramp test",
+    "testType": "Thermal Testing",
+    "inCharging": ["m001","m002"],
+    "timestamps": "2025-04-17T14:10:00.000Z",
+    "updatedAt": "2025-04-17T14:44:06.019Z",
+    "dueDate": "2025-04-20T00:00:00.000Z",
+    "status": "pending"
+  },
+  ...
+]
+```
+
+##### POST /v1/tasks:
+* 功能描述: 新增 task (manager / leader 權限)。
+* INPUT: Header 帶入 accessToken，Body JSON 含 name、description、testType、inCharging、dueDate、status。
+* OUTPUT: 新增 task 資料。
+* Http Code:
+    * 201 Created
+    * 400 Bad Request: "Name, description, testType, inCharging, dueDate and status are required" / "Invalid status"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken" / "Insufficient permissions"
+```
+POST http://localhost:8888/api/v1/tasks
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "Temp Ramp Test",
+  "description": "Run temperature ramp test",
+  "testType": "Thermal Testing",
+  "inCharging": ["m001"],
+  "dueDate": "2025-04-22T00:00:00.000Z",
+  "status": "pending"
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "id": "t002",
+  "name": "Temp Ramp Test",
+  "description": "Run temperature ramp test",
+  "testType": "Thermal Testing",
+  "inCharging": ["m001"],
+  "timestamps": "2025-04-17T15:00:00.000Z",
+  "updatedAt": "2025-04-17T14:44:06.019Z",
+  "dueDate": "2025-04-22T00:00:00.000Z",
+  "status": "pending"
+}
+```
+
+##### PUT /v1/tasks/:id:
+* 功能描述: 修改特定 task (full update)。
+* INPUT: Header 帶入 accessToken，Body JSON 含 name、description、testType、inCharging、dueDate、status。
+* OUTPUT: 修改後的 task 資料。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Invalid status"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken" / "Insufficient permissions"
+    * 404 Not Found: "Task not found"
+```
+PUT http://localhost:8888/api/v1/tasks/t001
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "name": "Temp Ramp Test V2",
+  "description": "Updated procedure",
+  "testType": "Thermal Testing",
+  "inCharging": ["m001","m003"],
+  "dueDate": "2025-04-23T00:00:00.000Z",
+  "status": "in-progress"
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "id": "t001",
+  "name": "Temp Ramp Test V2",
+  "description": "Updated procedure",
+  "testType": "Thermal Testing",
+  "inCharging": ["m001","m003"],
+  "timestamps": "2025-04-17T14:10:00.000Z",
+  "updatedAt": "2025-04-17T14:44:06.019Z",
+  "dueDate": "2025-04-23T00:00:00.000Z",
+  "status": "in-progress"
+}
+```
+
+##### PUT /v1/tasks/:id/:attribute:
+* 功能描述: 更新 task 的單一屬性。
+* INPUT: Header 帶入 accessToken，Body JSON 含該 attribute 的新值。
+* OUTPUT: 修改後的屬性資料。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Invalid attribute" / "Invalid value"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken" / "Insufficient permissions"
+    * 404 Not Found: "Task not found"
+```
+PUT http://localhost:8888/api/v1/tasks/t001/status
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{ "status": "completed" }
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{ "id": "t001", "status": "completed" }
+```
+
+##### DELETE /v1/tasks/:id:
+* 功能描述: 刪除特定 task。
+* INPUT: 把 accessToken 放在 Header 裡頭送過來。
+* OUTPUT: 刪除回應訊息。
+* Http Code:
+    * 200 OK
+    * 400 Bad Request: "Task not found"
+    * 401 Unauthorized: "no accessToken in Header"
+    * 403 Forbidden: "Invalid accessToken" / "Insufficient permissions"
+```
+DELETE http://localhost:8888/api/v1/tasks/t002
+Authorization: Bearer {accessToken}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{ "message": "Task deleted successfully" }
 ```

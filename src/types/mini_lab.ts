@@ -46,7 +46,9 @@ export type Task = {
     name: string
     description: string
     testType: string
-    inCharging: string[] 
+    inCharging: string[]
+    createAt: Date
+    dueDate: Date
     status: TaskStatus
 }
 export type TaskBody = Omit<Task, 'id'>
