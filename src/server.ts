@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import { AppConfig } from './types/config';
 import { establishConnection } from './plugins/mongodb';
 import { TodoRouter } from './routes/todo';
@@ -7,6 +8,12 @@ import cookieParser from 'cookie-parser';
 export const serverOf: () => Express = () => {
   const app = express();
   
+   // cors settings
+  app.use(cors({
+    origin: 'http://localhost:3000', // 允許前端來源
+    credentials: true                // 允許攜帶 cookies
+  }));
+
   // Middleware for parsing JSON
   app.use(express.json());
   app.use(cookieParser());
