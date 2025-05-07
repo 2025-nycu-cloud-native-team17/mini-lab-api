@@ -26,7 +26,7 @@ export type User = {
     email: string //employee信箱(公司分發)
     password: string //employee密碼(假定在這系統不能自行改密碼)
     role: UserRole //employee角色(組長/組員)
-    testType: UserTestType //employee測試類型
+    testType: UserTestType[] //employee測試類型
     status: UserStatus //employee狀態
 
     inCharging: string[] //employee負責的測試
@@ -50,6 +50,7 @@ export type Task = {
     createAt: Date
     dueDate: Date
     status: TaskStatus
+    duration: number; // hours.
 }
 export type TaskBody = Omit<Task, 'id'>
 
@@ -66,7 +67,6 @@ export type Machine = {
     name: string
     description: string
     testType: string
-    count: number
     status: MachineStatus
 } 
 export type MachineBody = Omit<Machine, 'id'>
