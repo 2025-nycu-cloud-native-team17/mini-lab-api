@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as MiniLabService from '../services/mini_lab';
 import { access } from 'fs';
 import { console } from 'inspector';
+import { logger } from '../utils/logger';
 
 export const handleLogin = async (req: Request, res: Response) => {
   try{

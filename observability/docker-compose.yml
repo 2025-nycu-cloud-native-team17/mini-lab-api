@@ -1,0 +1,77 @@
+---
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  loki:
+    image: grafana/loki:3.4.1
+    ports:
+      - "3100:3100"
+    networks:
+      - monitoring
+    container_name: loki
+    volumes:
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:3.2.1
+    container_name: promtail
+    volumes:
+      - ./promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/log/mini-lab:/var/log/mini-lab:ro
+    depends_on:
+      - loki
+    command:
+      - "--config.file=/etc/promtail/promtail.yml"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana-enterprise:12.0.0-ubuntu
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - monitoring
+    container_name: grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  # Exporter
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    privileged: true
+    networks:
+      - monitoring
+    ports:
+      - "8080:8080"
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      
+volumes:
+  prometheus-data:
+  loki-data:
+  grafana-storage:
+  
+networks:
+  monitoring:
+    driver: bridge
