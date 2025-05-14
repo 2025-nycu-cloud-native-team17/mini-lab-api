@@ -112,4 +112,27 @@ describe('Mini_lab Routes', () => {
         expect(res.body).toEqual(updatedUser)
         expect(service.updateUser).toHaveBeenCalledWith(id, updatedBody) 
     })
+
+    it('POST /v1/login should return accessToken', async () => {
+        const credentials = { email: 'u1', password: 'p1' }
+        type Tokens = {
+            accessToken: string;
+            refreshToken: string;
+          };
+        const result: Tokens = {
+            accessToken: 'access-tkn',
+            refreshToken: 'fresh-tkn',
+        }
+
+        vi.mocked(service.login).mockResolvedValue(result)
+
+        const res = await request(app)
+          .post('/v1/login')
+          .send(credentials)
+    
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual({accessToken: result.accessToken})
+    
+        expect(service.login).toHaveBeenCalledTimes(1)
+      })
 })
