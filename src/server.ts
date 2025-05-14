@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import { AppConfig } from './types/config';
 import { establishConnection } from './plugins/mongodb';
-import { TodoRouter } from './routes/todo';
+// import { TodoRouter } from './routes/todo';
 import { MiniLabRouter } from './routes/mini_lab';
 import cookieParser from 'cookie-parser';
 export const serverOf: () => Express = () => {
@@ -24,7 +24,7 @@ export const serverOf: () => Express = () => {
   });
 
   // Register todo routes
-  app.use('/api', TodoRouter);
+  // app.use('/api', TodoRouter);
   app.use('/api', MiniLabRouter);
 
   return app;

@@ -12,12 +12,14 @@ export const appConfig: AppConfig = {
   refresh_token_secret: process.env.REFRESH_TOKEN_SECRET || '',
 };
 
-const app = serverOf();
+if (require.main === module) {
+  const app = serverOf();
 
-serverStart(appConfig)(app)
-  .then(() => {
-    console.log(`Server listening on ${appConfig.host}:${appConfig.port}`);
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+  serverStart(appConfig)(app)
+    .then(() => {
+      console.log(`Server listening on ${appConfig.host}:${appConfig.port}`);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  }

@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { appConfig } from '../index';
-import * as MiniLabService from '../services/mini_lab';
+// import jwt from 'jsonwebtoken';
+// import { appConfig } from '../index';
+// import * as MiniLabService from '../services/mini_lab';
 import * as MiniLabController from '../controllers/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
 import { requireManagerRole } from '../middleware/requireRole';
@@ -18,7 +18,8 @@ MiniLabRouter.get('/v1/test_verifyJWT', verifyJWT, async (req, res) => {
 });
 
 // employee 相關 routes
-MiniLabRouter.get('/v1/users', verifyJWT, MiniLabController.handleGetUsers)
+MiniLabRouter.get('/v1/user', verifyJWT, MiniLabController.handleGetUser)
+MiniLabRouter.get('/v1/users', verifyJWT, requireManagerRole, MiniLabController.handleGetUsers)
 MiniLabRouter.get('/v1/user/:id', verifyJWT, MiniLabController.handleGetUserById);
 MiniLabRouter.post('/v1/user', verifyJWT, requireManagerRole, MiniLabController.handleRegisterUser);
 MiniLabRouter.delete('/v1/user/:id', verifyJWT, requireManagerRole, MiniLabController.handleDeleteUser);
