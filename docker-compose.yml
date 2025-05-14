@@ -19,6 +19,5 @@ services:
       - "8888:8888"
     depends_on:
       - db
-
-    
-  
+    volumes:
+      - /var/log/mini-lab:/var/log/mini-lab

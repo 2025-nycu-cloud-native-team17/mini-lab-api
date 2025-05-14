@@ -5,15 +5,16 @@ import express, { Router } from 'express';
 import * as MiniLabController from '../controllers/mini_lab';
 import { verifyJWT } from '../middleware/verifyJWT';
 import { requireManagerRole } from '../middleware/requireRole';
+import { routeLogger } from '../middleware/logger';
 
 export const MiniLabRouter: Router = express.Router();
 
 // debugging routes
-MiniLabRouter.get('/v1/test_route', async (req, res) => {
+MiniLabRouter.get('/v1/test_route', routeLogger, async (req, res) => {
   return res.status(200).json({ msg: 'route work successfully!' });
 });
 
-MiniLabRouter.get('/v1/test_verifyJWT', verifyJWT, async (req, res) => {
+MiniLabRouter.get('/v1/test_verifyJWT', routeLogger, verifyJWT, async (req, res) => {
   return res.status(200).json({ msg: 'verifyJWT successfully!' });
 });
 
@@ -29,15 +30,14 @@ MiniLabRouter.post('/v1/login', MiniLabController.handleLogin);
 MiniLabRouter.get('/v1/logout', MiniLabController.handleLogout);
 MiniLabRouter.get('/v1/refresh', MiniLabController.handleRefreshToken);
 
+MiniLabRouter.get('/v1/machines', routeLogger, verifyJWT, MiniLabController.handleGetMachines);
+MiniLabRouter.post('/v1/machines', routeLogger, verifyJWT, MiniLabController.handleAddMachine);
+MiniLabRouter.put('/v1/machines/:id', routeLogger, verifyJWT, MiniLabController.handleUpdateMachineById);
+MiniLabRouter.put('/v1/machines/:id/:attribute', routeLogger, verifyJWT, MiniLabController.handleUpdateMachineAttributeById);
+MiniLabRouter.delete('/v1/machines/:id', routeLogger, verifyJWT, MiniLabController.handleDeleteMachineById);
 
-MiniLabRouter.get('/v1/machines', verifyJWT, MiniLabController.handleGetMachines);
-MiniLabRouter.post('/v1/machines', verifyJWT, MiniLabController.handleAddMachine);
-MiniLabRouter.put('/v1/machines/:id', verifyJWT, MiniLabController.handleUpdateMachineById);
-MiniLabRouter.put('/v1/machines/:id/:attribute', verifyJWT, MiniLabController.handleUpdateMachineAttributeById);
-MiniLabRouter.delete('/v1/machines/:id', verifyJWT, MiniLabController.handleDeleteMachineById);
-
-MiniLabRouter.get('/v1/tasks', verifyJWT, MiniLabController.handleGetTasks);
-MiniLabRouter.post('/v1/tasks', verifyJWT, MiniLabController.handleAddTask);
-MiniLabRouter.put('/v1/tasks/:id', verifyJWT, MiniLabController.handleUpdateTaskById);
-MiniLabRouter.put('/v1/tasks/:id/:attribute', verifyJWT, MiniLabController.handleUpdateTaskAttributeById);
-MiniLabRouter.delete('/v1/tasks/:id', verifyJWT, MiniLabController.handleDeleteTaskById);
+MiniLabRouter.get('/v1/tasks', routeLogger, verifyJWT, MiniLabController.handleGetTasks);
+MiniLabRouter.post('/v1/tasks', routeLogger, verifyJWT, MiniLabController.handleAddTask);
+MiniLabRouter.put('/v1/tasks/:id', routeLogger, verifyJWT, MiniLabController.handleUpdateTaskById);
+MiniLabRouter.put('/v1/tasks/:id/:attribute', routeLogger, verifyJWT, MiniLabController.handleUpdateTaskAttributeById);
+MiniLabRouter.delete('/v1/tasks/:id', routeLogger, verifyJWT, MiniLabController.handleDeleteTaskById);
