@@ -14,9 +14,19 @@ vi.mock('../src/middleware/verifyJWT', () => ({
         next()
     }
   }))
+
 vi.mock('../src/middleware/requireRole', () => ({
     __esModule: true,
     requireManagerRole: (_req, _res, next) => next()
+  }))
+
+vi.mock('../src/utils/logger', () => ({
+    __esModule: true,
+    logger: {
+      info:  () => {},
+      warn:  () => {},
+      error: () => {},
+    }
   }))
 
 describe('Mini_lab Routes', () => {
@@ -27,6 +37,17 @@ describe('Mini_lab Routes', () => {
         app.use(express.json())
         app.use(MiniLabRouter)
         vi.clearAllMocks()
+    })
+
+    it('GET /v1/user should return one user', async () => {
+        const fakeUser: User = { id: '1', userId: '1234', name: 'test1', email: 'test1@tsmc.com', password: 'password', role: UserRole.LEADER, testType: UserTestType.TEST1, status: UserStatus.ACTIVE, inCharging: [], refreshToken: 'fake-refresh-token-1'}
+        
+        vi.mocked(service.getUserById).mockResolvedValue(fakeUser)
+    
+        const response = await request(app).get('/v1/user')
+    
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toEqual(fakeUser)
     })
 
     it('GET /v1/users should return all users', async () => {
@@ -41,5 +62,54 @@ describe('Mini_lab Routes', () => {
     
         expect(response.statusCode).toBe(200)
         expect(response.body).toEqual(fakeUsers)
-      })
+    })
+
+    it('GET /v1/user/:id should return one user', async () => {
+        const fakeUser: User = { id: '1', userId: '1234', name: 'test1', email: 'test1@tsmc.com', password: 'password', role: UserRole.LEADER, testType: UserTestType.TEST1, status: UserStatus.ACTIVE, inCharging: [], refreshToken: 'fake-refresh-token-1'}
+          
+        vi.mocked(service.getUserById).mockResolvedValue(fakeUser)
+    
+        const response = await request(app).get('/v1/user/:id')
+    
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toEqual(fakeUser)
+    })
+
+    it('POST /v1/user should return a new user', async () => {
+        const newUser: User = { id: '1', userId: '1234', name: 'test1', email: 'test1@tsmc.com', password: 'password', role: UserRole.LEADER, testType: UserTestType.TEST1, status: UserStatus.ACTIVE, inCharging: [], refreshToken: ''}
+          
+        vi.mocked(service.addUser).mockResolvedValue(newUser)
+    
+        const response = await request(app).post('/v1/user').send(newUser)
+    
+        expect(response.statusCode).toBe(201)
+        expect(response.body).toEqual(newUser)
+        expect(service.addUser).toHaveBeenCalled()
+    })
+
+    it('DELETE /v1/user/:id should return NULL', async () => {
+        const id = '42'
+
+        vi.mocked(service.deleteUser).mockResolvedValue(undefined)
+
+        const res = await request(app).delete(`/v1/user/${id}`)
+
+        expect(res.status).toBe(204)
+        expect(res.body).toEqual({})
+        expect(service.deleteUser).toHaveBeenCalledWith(id) 
+    })
+
+    it('PUT /v1/user/:id should return updated user', async () => {
+        const id = '1'
+        const updatedBody: Partial<User> = { name: 'Bob Updated', status: UserStatus.BLOCKED}
+        const updatedUser: User = { id: '1', userId: '1234', name: updatedBody.name!, email: 'test1@tsmc.com', password: 'password', role: UserRole.LEADER, testType: UserTestType.TEST1, status: updatedBody.status!, inCharging: [], refreshToken: ''}
+
+        vi.mocked(service.updateUser).mockResolvedValue(updatedUser)
+
+        const res = await request(app).put(`/v1/user/${id}`).send(updatedBody)
+
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual(updatedUser)
+        expect(service.updateUser).toHaveBeenCalledWith(id, updatedBody) 
+    })
 })

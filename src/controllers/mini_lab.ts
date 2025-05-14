@@ -73,7 +73,7 @@ export const handleDeleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     // console.log(id);
     await MiniLabService.deleteUser(id);
-    return res.status(200).json({ message: 'User deleted successfully' });
+    return res.status(204).json({ message: 'User deleted successfully' });
   } catch (err: any) {
     return res.status(400).json({ message: err.message || 'Failed to delete user' });
   }
