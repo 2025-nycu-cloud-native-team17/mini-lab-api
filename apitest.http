@@ -1,6 +1,6 @@
 ### manager
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDBlYjZmMDM5ZjUyYTNhYzZiMTQwYiIsImVtYWlsIjoidXNlcjFAZXhhbXBsZS5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDkwMDc2MSwiZXhwIjoxNzQ0OTA0MzYxfQ.77glQAxsVmYAs7kdar5QwVYmEWOEIR1ToPtyD72xLVM
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDBlYjZmMDM5ZjUyYTNhYzZiMTQwYiIsImVtYWlsIjoidXNlcjFAZXhhbXBsZS5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDkwMDc2MSwiZXhwIjoxNzQ0OTg3MTYxfQ.I00d0wKcdE5v5oonRH4yNPagWBNQ4D3NNMFBZluyMkc
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjQ3NjhkZTNjMzU5NDMyODZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ3MjIwMTY1LCJleHAiOjE3NDcyMjM3NjV9.gaexfDUdz--3BeOpckwT2cb0ByWb79KXIpvBi2dzt40
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjQyMmUyOGM5N2FkOGQ3ZTZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ3MjAyMTIzLCJleHAiOjE3NDcyODg1MjN9.O3R3IKC_GQdcQfVOOqFaBKLFY4ujafGh8ZT7U7UIXYQ
 
 ### leader
 # @refreshToken = 
@@ -14,8 +14,8 @@ POST http://localhost:8888/api/v1/login
 Content-Type: application/json
 
 {
-  "email": "user1@example.com",
-  "password": "user1"
+  "email": "user3@example.com",
+  "password": "user3"
 }
 
 ###
@@ -31,11 +31,15 @@ GET http://localhost:8888/api/v1/test_verifyJWT
 Authorization: Bearer {{accessToken}}
 
 ###
+GET http://localhost:8888/api/v1/user
+Authorization: Bearer {{accessToken}}
+
+###
 GET http://localhost:8888/api/v1/users
 Authorization: Bearer {{accessToken}}
 
 ###
-GET http://localhost:8888/api/v1/user/6800eb6f039f52a3ac6b140b
+GET http://localhost:8888/api/v1/user/682422e28c97ad8d7e6b140d
 Authorization: Bearer {{accessToken}}
 
 ###

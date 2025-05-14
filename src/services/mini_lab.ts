@@ -133,6 +133,18 @@ export const refreshAccessToken = async (refreshToken: string): Promise<string> 
   });
 };
 
+// export const getUser = async (): Promise<User[]> => {
+//   const docs = await repo.findAllUsers();
+
+//   return docs.map(doc => {
+//     const { _id, password, email, role, status, refreshToken, ...rest } = doc.toObject();
+//     return {
+//       id: _id.toString(),
+//       ...rest,
+//     };
+//   });
+// };
+
 export const getUsers = async (): Promise<User[]> => {
   const docs = await repo.findAllUsers();
 

@@ -103,6 +103,23 @@ export const handleUpdateUser = async (req: Request, res: Response) => {
     }
 };
 
+export const handleGetUser = async (req: Request & { user?: { id: string } }, res: Response) => {
+  try {
+    // const id: string|undefined = req.user?.id;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const user = await MiniLabService.getUserById(req.user?.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found(from handle get user)' });
+    }
+
+    return res.status(200).json(user);
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message || 'Failed to get users' });
+  }
+};
+
 export const handleGetUsers = async (req: Request, res: Response) => {
     try {
       const users = await MiniLabService.getUsers();

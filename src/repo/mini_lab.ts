@@ -10,6 +10,8 @@ export interface MiniLabUserDocument extends Document, UserBody {}
 
 export const createUser: (userBody: UserBody) => Promise<MiniLabUserDocument> = (userBody) => MiniLabUserModel.create(userBody)
 
+// export const findUser: () => Promise<Array<MiniLabUserDocument>> = () => MiniLabUserModel.find().exec()
+
 export const findAllUsers: () => Promise<Array<MiniLabUserDocument>> = () => MiniLabUserModel.find().exec()
 
 export const findUserById: (id: string) => Promise<MiniLabUserDocument | null> = (id) => MiniLabUserModel.findById(id).exec()
