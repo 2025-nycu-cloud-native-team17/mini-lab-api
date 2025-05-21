@@ -3,6 +3,7 @@
 ## for front-end group
 Louis has prepared one docker-compose file to build and run our API-server and mongoDB. Please run following command.
 
+
 ```bash
 cd mini-lab-api
 docker compose up --build
