@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi, test } from 'vitest'
 import express, { Application } from 'express'
+import cookieParser from 'cookie-parser'
 import request from 'supertest'
 import { MiniLabRouter } from '../src/routes/mini_lab'
 import * as service from '../src/services/mini_lab'
@@ -37,6 +38,7 @@ describe('Mini_lab Routes', () => {
     beforeEach(() => {
         app = express()
         app.use(express.json())
+        app.use(cookieParser())  
         app.use(MiniLabRouter)
         vi.clearAllMocks()
     })
@@ -106,15 +108,32 @@ describe('Mini_lab Routes', () => {
       vi.mocked(service.getTasks).mockResolvedValue(fakeTasks);
       const res = await request(app).get('/v1/tasks');
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(fakeTasks);
+
+      // 把 JSON 里回来的日期字符串还原成 Date
+      const tasks: Task[] = res.body.map((t: any) => ({
+        ...t,
+        createAt:  new Date(t.createAt),
+        dueDate:   new Date(t.dueDate),
+      }))
+
+      expect(tasks).toEqual(fakeTasks);
       expect(service.getTasks).toHaveBeenCalledTimes(1);
     });
 
     it('POST /v1/tasks should create a task', async () => {
-      const newTask: Task = {id:'t001',name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001','m002'],createAt:new Date('2025-04-17T14:10:00.000Z'),dueDate: new Date('2025-04-20T14:10:00.000Z'),status:TaskStatus.IN_PROGRESS}
+      const newTask = {id:'t001',name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001','m002'],createAt:'2025-04-17T14:10:00.000Z',dueDate: '2025-04-17T14:10:00.000Z',status:TaskStatus.IN_PROGRESS}
+      // const newTask: Task = {id:'t001',name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001','m002'],createAt:new Date('2025-04-17T14:10:00.000Z'),dueDate: new Date('2025-04-20T14:10:00.000Z'),status:TaskStatus.IN_PROGRESS}
       
-      vi.mocked(service.addTask).mockResolvedValue(newTask);
+      vi.mocked(service.addTask).mockResolvedValue(newTask as any);
       const res = await request(app).post('/v1/tasks').send(newTask);
+
+      // // 把 JSON 里回来的日期字符串还原成 Date
+      // const tasks: Task ={
+      //   ...res.body,
+      //   createAt:  new Date(res.body.createAt),
+      //   dueDate:   new Date(res.body.dueDate),
+      // } 
+
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual(newTask);
       expect(service.addTask).toHaveBeenCalledWith(newTask);
@@ -123,8 +142,9 @@ describe('Mini_lab Routes', () => {
     it('PUT /v1/tasks/:id should update a task', async () => {
       const id = 't001';
       const updateBody: Partial<TaskBody> = {status:TaskStatus.COMPLETED};
-      const updated: Task = {id,name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001'],dueDate: new Date('2025-04-20T14:10:00.000Z'),status:updateBody.status!,createAt:new Date('2025-04-17T14:44:06.019Z')};
-      vi.mocked(service.updateTaskById).mockResolvedValue(updated);
+      // const updated: Task = {id,name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001'],dueDate: new Date('2025-04-20T14:10:00.000Z'),status:updateBody.status!,createAt:new Date('2025-04-17T14:44:06.019Z')};
+      const updated = {id,name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001'],dueDate: '2025-04-20T14:10:00.000Z',status:updateBody.status!,createAt:'2025-04-17T14:44:06.019Z'};
+      vi.mocked(service.updateTaskById).mockResolvedValue(updated as any);
       const res = await request(app).put(`/v1/tasks/${id}`).send(updateBody);
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(updated);
@@ -133,8 +153,8 @@ describe('Mini_lab Routes', () => {
 
     it('PUT /v1/tasks/:id/:attribute should update one field', async () => {
       const id = 't001', attr = 'status', value = TaskStatus.COMPLETED;
-      const updated: Task = {id,name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001'],dueDate:new Date('2025-04-22T00:00:00.000Z'),status:value,createAt:new Date('2025-04-17T14:44:06.019Z')};
-      vi.mocked(service.updateTaskAttributeById).mockResolvedValue(updated);
+      const updated = {id,name:'Temp Ramp Test',description:'Run temperature ramp test',testType:'Thermal Testing',inCharging:['m001'],dueDate:'2025-04-22T00:00:00.000Z',status:value,createAt:'2025-04-17T14:44:06.019Z'};
+      vi.mocked(service.updateTaskAttributeById).mockResolvedValue(updated as any);
       const res = await request(app).put(`/v1/tasks/${id}/${attr}`).send({value});
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(updated);
@@ -146,7 +166,7 @@ describe('Mini_lab Routes', () => {
       vi.mocked(service.deleteTaskById).mockResolvedValue({} as any);
       const res = await request(app).delete(`/v1/tasks/${id}`);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({message:'Task deleted successfully'});
+      expect(res.body).toEqual({msg:'Task deleted successfully', result: {}});
       expect(service.deleteTaskById).toHaveBeenCalledWith(id);
     });
 
@@ -248,27 +268,25 @@ describe('Mini_lab Routes', () => {
         expect(service.login).toHaveBeenCalledTimes(1)
       })
 
-    it('POST /v1/logout should return NULL', async () => {
-        const credentials = { email: 'u1', password: 'p1' }
-        type Tokens = {
-            accessToken: string;
-            refreshToken: string;
-          };
-        const result: Tokens = {
-            accessToken: 'access-tkn',
-            refreshToken: 'fresh-tkn',
-        }
-
-        vi.mocked(service.logout)
+    it('GET /v1/logout should return NULL', async () => {
+        // const credentials = { email: 'u1', password: 'p1' }
+        // type Tokens = {
+        //     accessToken: string;
+        //     refreshToken: string;
+        //   };
+        // const fakeToken: Tokens = {
+        //     accessToken: 'access-tkn',
+        //     refreshToken: 'fresh-tkn',
+        // }
+        const fakeToken = 'fresh-tkn'
+        vi.mocked(service.logout).mockResolvedValue(undefined)
         const res = await request(app)
           .get('/v1/logout')
-          .send(credentials)
-    
+          .set('Cookie', `refreshToken=${fakeToken}`)
+
         expect(res.status).toBe(204)
-        expect(res.body).toEqual({accessToken: result.accessToken})
-    
-        expect(service.login).toHaveBeenCalledTimes(1)
+        expect(res.body).toEqual({})
+        expect(service.logout).toHaveBeenCalledTimes(1)
+        expect(service.logout).toHaveBeenCalledWith(fakeToken)
       })
-
-
 })
