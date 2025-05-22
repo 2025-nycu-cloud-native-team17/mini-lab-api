@@ -58,6 +58,10 @@ export const deleteTaskById: (id: string) => Promise<ModifyResult<Task>> = async
   return result
 }
 
+// export const scheduleTask: (id: string) => Promise<ModifyResult<Task>> = async (id) => {
+//   const result = await repo.scheduleTask(id)
+//   return result
+// }
 //-----------------------User---------------------- //
 type Token = {
   accessToken: string;

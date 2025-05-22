@@ -28,9 +28,9 @@ export type User = {
     role: UserRole //employee角色(組長/組員)
     testType: UserTestType //employee測試類型
     status: UserStatus //employee狀態
-
     inCharging: string[] //employee負責的測試
     refreshToken: string //refresh token
+    busywindow: number[][] //員工忙碌時間區間
 }
 export type UserBody = Omit<User, 'id'>
 
@@ -43,13 +43,15 @@ export enum TaskStatus {
 
 export type Task = {
     id: string
+    taskId: string
     name: string
     description: string
     testType: string
     inCharging: string[]
-    createAt: Date
-    dueDate: Date
     status: TaskStatus
+    duration: number
+    earliestStart: number
+    deadline: number
 }
 export type TaskBody = Omit<Task, 'id'>
 
@@ -63,11 +65,22 @@ export enum MachineStatus {
 
 export type Machine = {
     id: string
+    machineId: string
     name: string
     description: string
     testType: string
     count: number
     status: MachineStatus
+    busywindow: number[][] //機台忙碌時間區間
 } 
 export type MachineBody = Omit<Machine, 'id'>
+
+export type Assignment ={
+    assignmentId: string
+    taskId: string
+    machineId: string
+    userId: string
+    startTime: number
+    endTime: number
+}
   

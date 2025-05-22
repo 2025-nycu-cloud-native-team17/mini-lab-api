@@ -41,3 +41,5 @@ MiniLabRouter.post('/v1/tasks', routeLogger, verifyJWT, MiniLabController.handle
 MiniLabRouter.put('/v1/tasks/:id', routeLogger, verifyJWT, MiniLabController.handleUpdateTaskById);
 MiniLabRouter.put('/v1/tasks/:id/:attribute', routeLogger, verifyJWT, MiniLabController.handleUpdateTaskAttributeById);
 MiniLabRouter.delete('/v1/tasks/:id', routeLogger, verifyJWT, MiniLabController.handleDeleteTaskById);
+
+// MiniLabRouter.post('/v1/tasks/schedule', routeLogger, verifyJWT, MiniLabController.handleScheduleTask);

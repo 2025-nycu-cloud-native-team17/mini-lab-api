@@ -34,7 +34,7 @@ const miniLabUserSchema = new mongoose.Schema(
       required: true
     },
     testType: {
-      type: String,
+      type: [String],
       enum: Object.values(UserTestType), // Use UserTestType enum
       required: true
     },
@@ -50,6 +50,10 @@ const miniLabUserSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       default: ''
+    },
+    busywindow: {
+      type: [[Number]],
+      required: true
     }
   },
   {
@@ -70,6 +74,11 @@ miniLabUserSchema.set('toJSON', {
 //status: 機器狀態
 const miniLabMachineSchema = new mongoose.Schema(
   {
+    machineId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     name: { 
       type: String,
       required: true
@@ -79,7 +88,7 @@ const miniLabMachineSchema = new mongoose.Schema(
       default: ''
     },
     testType: {
-      type: String,
+      type: [String],
       required: true
     },
     count: {
@@ -89,6 +98,10 @@ const miniLabMachineSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: Object.values(MachineStatus), // Use MachineStatus enum
+      required: true
+    },
+    busywindow: {
+      type: [[Number]],
       required: true
     }
   },
@@ -109,6 +122,11 @@ miniLabMachineSchema.set('toJSON', {
 //status: 任務狀態
 const miniLabTaskSchema = new mongoose.Schema(
   {
+    taskId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     name: {
       type: String,
       required: true
@@ -129,6 +147,18 @@ const miniLabTaskSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(TaskStatus), // Use TaskStatus enum
       required: true
+    },
+    duration: {
+      type: Number,
+      required: true
+    },
+    earliest_start: {
+      type: Number,
+      required: true
+    },
+    deadline: {
+      type: Number,
+      required: true
     }
   },
   {
@@ -141,6 +171,46 @@ miniLabTaskSchema.set('toJSON', {
   versionKey: false
 })
 
+const miniLabAssignmentSchema = new mongoose.Schema(
+  {
+    assignment_id: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    task_id: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    worker_id: {
+      type: String,
+      required: true
+    },
+    machine_id: {
+      type: String,
+      required: true
+    },
+    start: {
+      type: Number,
+      required: true
+    },
+    end: {
+      type: Number,
+      required: true
+    }
+  },
+  {
+    timestamps: true,
+    collection: "MiniLabAssignments" // Avoid confusion
+  }
+)
+miniLabAssignmentSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false
+})
+
 export const MiniLabUserModel = mongoose.models.MiniLabUser || mongoose.model<UserBody>('MiniLabUser', miniLabUserSchema);
 export const MiniLabMachineModel = mongoose.models.MiniLabMachine || mongoose.model('MiniLabMachine', miniLabMachineSchema);
 export const MiniLabTaskModel = mongoose.models.MiniLabTask || mongoose.model('MiniLabTask', miniLabTaskSchema);
+export const MiniLabAssignmentModel = mongoose.models.MiniLabAssignment || mongoose.model('MiniLabAssignment', miniLabAssignmentSchema);
