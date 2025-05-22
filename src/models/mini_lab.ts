@@ -1,6 +1,4 @@
 import mongoose from 'mongoose'
-
-import { Todo } from '../types/todo'
 import { UserStatus, UserTestType, UserRole, TaskStatus, MachineStatus, UserBody } from '../types/mini_lab' // Import enums
 
 //name: 員工名稱
