@@ -8,7 +8,9 @@ services:
       dockerfile: dockerfile.init.db
     ports:
       - "27017:27017"
- 
+    volumes:
+      - dbdata:/data/db
+
   mini-lab-api:
     image: mini-lab-api
     container_name: mini-lab-api
@@ -21,3 +23,6 @@ services:
       - db
     volumes:
       - /var/log/mini-lab:/var/log/mini-lab
+
+volumes:
+  dbdata:
