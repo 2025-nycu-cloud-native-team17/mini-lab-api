@@ -62,9 +62,18 @@ const miniLabUserSchema = new mongoose.Schema(
   }
 )
 miniLabUserSchema.set('toJSON', {
-  virtuals: true,
-  versionKey: false
-})
+  virtuals: true,          // 開啟虛擬屬性（如 id）
+  versionKey: false,       // 移除 __v
+  transform: (_, ret) => {
+    ret.id = ret._id.toString(); // 把 _id 轉成 id 欄位
+    delete ret._id;
+    delete ret.password;         // ❗移除敏感資訊
+    delete ret.refreshToken;     // ❗移除 refresh token
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 
 //name: 機器名稱
@@ -112,8 +121,15 @@ const miniLabMachineSchema = new mongoose.Schema(
 )
 miniLabMachineSchema.set('toJSON', {
   virtuals: true,
-  versionKey: false
-})
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 //name: 任務名稱
 //description: 任務描述
@@ -122,11 +138,11 @@ miniLabMachineSchema.set('toJSON', {
 //status: 任務狀態
 const miniLabTaskSchema = new mongoose.Schema(
   {
-    taskId: {
-      type: String,
-      required: true,
-      unique: true
-    },
+    // taskId: {
+    //   type: String,
+    //   required: true,
+    //   unique: true
+    // },
     name: {
       type: String,
       required: true
@@ -141,12 +157,14 @@ const miniLabTaskSchema = new mongoose.Schema(
     },
     inCharging: {
       type: [String],
-      required: true
+      // required: true
+      default: []
     },
     status: {
       type: String,
       enum: Object.values(TaskStatus), // Use TaskStatus enum
-      required: true
+      // required: true
+      default: TaskStatus.PENDING // 預設為 PENDING
     },
     duration: {
       type: Number,
@@ -168,8 +186,15 @@ const miniLabTaskSchema = new mongoose.Schema(
 )
 miniLabTaskSchema.set('toJSON', {
   virtuals: true,
-  versionKey: false
-})
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();  // 加上 id 欄位
+    delete ret._id;               // 移除 _id 原始欄位
+    delete ret.createdAt;         // 移除自動加的欄位
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 const miniLabAssignmentSchema = new mongoose.Schema(
   {
@@ -207,8 +232,15 @@ const miniLabAssignmentSchema = new mongoose.Schema(
 )
 miniLabAssignmentSchema.set('toJSON', {
   virtuals: true,
-  versionKey: false
-})
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();   // 統一提供 id 欄位
+    delete ret._id;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 export const MiniLabUserModel = mongoose.models.MiniLabUser || mongoose.model<UserBody>('MiniLabUser', miniLabUserSchema);
 export const MiniLabMachineModel = mongoose.models.MiniLabMachine || mongoose.model('MiniLabMachine', miniLabMachineSchema);

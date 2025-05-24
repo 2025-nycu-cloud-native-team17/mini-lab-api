@@ -12,17 +12,23 @@ export const createUser: (userBody: UserBody) => Promise<MiniLabUserDocument> = 
 
 // export const findUser: () => Promise<Array<MiniLabUserDocument>> = () => MiniLabUserModel.find().exec()
 
-export const findAllUsers: () => Promise<Array<MiniLabUserDocument>> = () => MiniLabUserModel.find().exec()
+export const findAllUsers: () => Promise<Array<MiniLabUserDocument>> = () => 
+  MiniLabUserModel.find().exec()
 
-export const findUserById: (id: string) => Promise<MiniLabUserDocument | null> = (id) => MiniLabUserModel.findById(id).exec()
+export const findUserById: (id: string) => Promise<MiniLabUserDocument | null> = (id) => 
+  MiniLabUserModel.findById(id).exec()
 
-export const findUserByEmail: (email: string) => Promise<MiniLabUserDocument | null> = (email) => MiniLabUserModel.findOne({ email: email }).exec()
+export const findUserByEmail: (email: string) => Promise<MiniLabUserDocument | null> = (email) => 
+  MiniLabUserModel.findOne({ email: email }).exec()
 
-export const findUserByToken: (refreshToken: string) => Promise<MiniLabUserDocument | null> = (refreshToken) => MiniLabUserModel.findOne({ refreshToken:refreshToken }).exec()
+export const findUserByToken: (refreshToken: string) => Promise<MiniLabUserDocument | null> = (refreshToken) => 
+  MiniLabUserModel.findOne({ refreshToken:refreshToken }).exec()
 
-export const updateUserById: (id: string, update: UpdateQuery<UserBody>) => Promise<MiniLabUserDocument | null> = (id, update) => MiniLabUserModel.findByIdAndUpdate(id, update, { new: true })
+export const updateUserById: (id: string, update: UpdateQuery<UserBody>) => Promise<MiniLabUserDocument | null> = (id, update) => 
+  MiniLabUserModel.findByIdAndUpdate(id, update, { new: true })
 
-export const deleteUserById: (id: string) => Promise<ModifyResult<User>> = (id) => MiniLabUserModel.findByIdAndDelete(id).exec()
+export const deleteUserById: (id: string) => Promise<ModifyResult<User>> = (id) => 
+  MiniLabUserModel.findByIdAndDelete(id).exec()
 
 // ----------------------Machine---------------------- //
 export const findAllMachines: () => Promise<Array<Machine>> = () => MiniLabMachineModel.find().exec()

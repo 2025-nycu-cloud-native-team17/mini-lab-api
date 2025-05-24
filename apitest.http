@@ -1,7 +1,7 @@
 ### manager
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjQ3NjhkZTNjMzU5NDMyODZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ3MjIwMTY1LCJleHAiOjE3NDcyMjM3NjV9.gaexfDUdz--3BeOpckwT2cb0ByWb79KXIpvBi2dzt40
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjQyMmUyOGM5N2FkOGQ3ZTZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ3MjAyMTIzLCJleHAiOjE3NDcyODg1MjN9.O3R3IKC_GQdcQfVOOqFaBKLFY4ujafGh8ZT7U7UIXYQ
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzFiYzZhMmNkZGMzNDIwYTZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ4MDkwMDg0LCJleHAiOjE3NDgwOTM2ODR9.hLsfYdML5RZndbldFblzDe_r8uVZju6ng4Bmxz8qkdQ
 
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzA4NGIyNGE5ZjUxZTI5MGJmNjYzOCIsImVtYWlsIjoidXNlcjRAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ4MDg1OTc0LCJleHAiOjE3NDgxNzIzNzR9.lGRscht6iW9rKoA4UJy_E4RH_OtKfnDyZ20chpxu3cE
 ### leader
 # @refreshToken = 
 # @accessToken = 
@@ -39,7 +39,7 @@ GET http://localhost:8888/api/v1/users
 Authorization: Bearer {{accessToken}}
 
 ###
-GET http://localhost:8888/api/v1/user/682422e28c97ad8d7e6b140d
+GET http://localhost:8888/api/v1/user/6831b0e3ae62506afb6b140c
 Authorization: Bearer {{accessToken}}
 
 ###
@@ -48,31 +48,110 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "userId": "0004",
-    "name": "add",
-    "email": "add@example.com",
-    "password": "add",
-    "role": "manager",
-    "testType": "Physical Property Testing",
+    "userId": "E004",
+    "name": "user4",
+    "email": "user4@example.com",
+    "password": "user4",
+    "role": "member",
+    "testType": ["Electrical Testing", "Physical Property Testing"],
     "status": "active"
 }
 
 ###
-DELETE  http://localhost:8888/api/v1/user/680112c024a8cf6964f6ab32
+DELETE  http://localhost:8888/api/v1/user/6830827b274159f8ff6b140c
 Authorization: Bearer {{accessToken}}
 
 ###
-PUT http://localhost:8888/api/v1/user/680112c024a8cf6964f6ab32
+PUT http://localhost:8888/api/v1/user/683084b24a9f51e290bf6638
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "userId": "0004",
-    "name": "add",
-    "email": "add@example.com",
-    "password": "add",
-    "role": "manager",
-    "testType": "Physical Property Testing",
+    "userId": "E004",
+    "name": "test PUT",
+    "email": "user4@example.com",
+    "password": "user4",
+    "role": "member",
+    "testType": ["Electrical Testing", "Physical Property Testing"],
     "status": "active"
 }
 
+###
+GET http://localhost:8888/api/v1/machines
+Authorization: Bearer {{accessToken}}
+
+###
+POST http://localhost:8888/api/v1/machines
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "machineId": "M005",
+    "name": "Humidity Chamber",
+    "description": "Controlled humidity environment",
+    "testType": ["Electrical Testing"],
+    "count": 1,
+    "status": "idle"
+}
+
+###
+PUT http://localhost:8888/api/v1/machines/6831b1c1cc826a08600c1732
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Thermal Chamber Pro",
+  "description": "Upgraded thermal cycling device",
+  "testType": ["Thermal Testing"],
+  "status": "in_progress"
+}
+
+###
+PUT http://localhost:8888/api/v1/machines/6831b2fecc826a08600c1737/count
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ "value": 5 }
+
+###
+DELETE http://localhost:8888/api/v1/machines/6831b1c1cc826a08600c1732
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8888/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+
+###
+POST http://localhost:8888/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Temp Ramp Test",
+  "description": "Run temperature ramp test",
+  "testType": "Thermal Testing",
+  "duration": 1800,
+  "earliest_start": 1750676400,
+  "deadline": 1750678200
+}
+
+###
+PUT http://localhost:8888/api/v1/tasks/6831bd99a1f671c319c48ef7
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Temp Ramp Test Updated",
+  "description": "Run temperature ramp test Updated"
+}
+
+###
+PUT http://localhost:8888/api/v1/tasks/6831bdada1f671c319c48ef9/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ "value": "completed" }
+
+###
+DELETE http://localhost:8888/api/v1/tasks/6831bdada1f671c319c48ef9
+Authorization: Bearer {{accessToken}}

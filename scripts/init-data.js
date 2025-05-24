@@ -4,40 +4,40 @@ const now = Math.floor(new Date("2025-06-23T09:00:00Z").getTime() / 1000); // UT
 
 db.MiniLabUsers.insertMany([
   {
-    userId: "0001",
+    userId: "E001",
     name: "user1",
     email: "user1@example.com",
     password: "user1",
     role: "manager",
     testType: ["Physical Property Testing"],
-    inCharging: [],
+    inCharging: ["T003"],
     status: "active",
     refreshToken: "",
     busywindow: [[now + 0, now + 1800]] // 09:00 ~ 09:30
   },
   {
-    userId: "0002",
+    userId: "E002",
     name: "user2",
     email: "user2@example.com",
     password: "user2",
     role: "leader",
     testType: ["Thermal Testing"],
-    inCharging: ["T001"],
     status: "active",
     refreshToken: "",
-    busywindow: [[now + 3600, now + 5400]] // 10:00 ~ 10:30
+    inCharging: ["T001"],
+    busywindow: [[now, now + 1800]]
   },
   {
-    userId: "0003",
+    userId: "E003",
     name: "user3",
     email: "user3@example.com",
     password: "user3",
     role: "member",
     testType: ["Electrical Testing"],
-    inCharging: ["T002"],
     status: "active",
     refreshToken: "",
-    busywindow: []
+    inCharging: ["T002"],
+    busywindow: [[now + 1800, now + 5400]]
   }
 ]);
 
@@ -45,29 +45,32 @@ db.MiniLabMachines.insertMany([
   {
     machineId: "M001",
     name: "Machine1",
-    description: "Thermal Testing",
+    description: "",
     testType: ["Thermal Testing"],
-    count: 3,
-    status: "available",
-    busywindow: [[now + 1800, now + 2700]] // 09:30 ~ 09:45
+    count: 1,
+    status: "idle",
+    inCharging: ["T001"],
+    busywindow: [[now, now + 1800]]
   },
   {
     machineId: "M002",
     name: "Machine2",
-    description: "Electrical Testing",
+    description: "",
     testType: ["Electrical Testing"],
-    count: 4,
-    status: "available",
-    busywindow: []
+    count: 1,
+    status: "idle",
+    inCharging: ["T002"],
+    busywindow: [[now + 1800, now + 5400]]
   },
   {
     machineId: "M003",
     name: "Machine3",
-    description: "Physical Property Testing",
+    description: "",
     testType: ["Physical Property Testing"],
-    count: 5,
-    status: "available",
-    busywindow: []
+    count: 1,
+    status: "idle",
+    inCharging: ["T003"],
+    busywindow: [[now + 7200, now + 9000]]
   }
 ]);
 
@@ -77,8 +80,8 @@ db.MiniLabTasks.insertMany([
     name: "Thermal Test A",
     description: "Thermal test for component A",
     testType: "Thermal Testing",
-    inCharging: ["0002"],
-    status: "pending",
+    inCharging: ["E002", "M001"],
+    status: "assigned",
     duration: 1800,                          // 30 minutes
     earliest_start: now + 0,                // 09:00
     deadline: now + 7200                    // 11:00
@@ -88,8 +91,8 @@ db.MiniLabTasks.insertMany([
     name: "Electrical Test B",
     description: "Voltage tolerance test",
     testType: "Electrical Testing",
-    inCharging: ["0003"],
-    status: "pending",
+    inCharging: ["E003", "M002"],
+    status: "assigned",
     duration: 3600,
     earliest_start: now + 1800,             // 09:30
     deadline: now + 10800                   // 12:00
@@ -99,8 +102,8 @@ db.MiniLabTasks.insertMany([
     name: "Property Test C",
     description: "Stress test on plastics",
     testType: "Physical Property Testing",
-    inCharging: ["0001"],
-    status: "pending",
+    inCharging: ["E001", "M003"],
+    status: "assigned",
     duration: 1800,
     earliest_start: now + 7200,             // 11:00
     deadline: now + 9000                    // 11:30
@@ -110,21 +113,21 @@ db.MiniLabTasks.insertMany([
 db.MiniLabAssignments.insertMany([
   {
     task_id: "T001",
-    worker_id: "0002",
+    worker_id: "E002",
     machine_id: "M001",
     start: now + 0,        // 09:00
     end: now + 1800        // 09:30
   },
   {
     task_id: "T002",
-    worker_id: "0003",
+    worker_id: "E003",
     machine_id: "M002",
     start: now + 1800,     // 09:30
     end: now + 5400        // 10:30
   },
   {
     task_id: "T003",
-    worker_id: "0001",
+    worker_id: "E001",
     machine_id: "M003",
     start: now + 7200,     // 11:00
     end: now + 9000        // 11:30

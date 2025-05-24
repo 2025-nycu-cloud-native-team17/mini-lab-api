@@ -24,6 +24,7 @@ export const updateMachineById: (id: string, update: Partial<MachineBody>) => Pr
 }
 
 export const updateMachineAttributeById: (id: string, attribute: string, value: any) => Promise<Machine | null> = async (id, attribute, value) => {
+  console.log('id', id, 'attribute', attribute, 'value', value);
   const machine = await repo.updateMachineById(id, { [attribute]: value })
   return machine
 }
@@ -151,25 +152,14 @@ export const refreshAccessToken = async (refreshToken: string): Promise<string> 
 
 export const getUsers = async (): Promise<User[]> => {
   const docs = await repo.findAllUsers();
-
-  return docs.map(doc => {
-    const { _id, password, email, role, status, refreshToken, ...rest } = doc.toObject();
-    return {
-      id: _id.toString(),
-      ...rest,
-    };
-  });
+  return docs.map(doc => doc.toJSON() as User);
 };
 
 export const getUserById = async (id: string): Promise<User | null> => {
   const doc = await repo.findUserById(id);
   if (!doc) return null;
 
-  const { _id, password, refreshToken, ...rest } = doc.toObject();
-  return {
-    id: _id.toString(),
-    ...rest
-  };
+  return doc.toJSON() as User;
 };
 
 export const addUser: (userBody: UserBody) => Promise<User> = async (userBody) => {
@@ -182,7 +172,7 @@ export const addUser: (userBody: UserBody) => Promise<User> = async (userBody) =
       throw new Error('Invalid role');
     }
   
-    if (!Object.values(UserTestType).includes(userBody.testType as UserTestType)) {
+    if (!Array.isArray(userBody.testType) || userBody.testType.some(t => !Object.values(UserTestType).includes(t))) {
       throw new Error('Invalid test type');
     }
   
@@ -203,10 +193,11 @@ export const addUser: (userBody: UserBody) => Promise<User> = async (userBody) =
     // Create new user in DB
     const savedUser = await repo.createUser(userBody);
   
-    return{
-      id: savedUser.id.toString(),
-      ...userBody,
-    };
+    // return{
+    //   id: savedUser.id.toString(),
+    //   ...userBody,
+    // };
+    return savedUser.toJSON() as User;
 };
 
 export const deleteUser: (id: string) => Promise<void> = async (id) => {
@@ -224,7 +215,7 @@ export const updateUser: (id: string, update: Partial<UserBody>) => Promise<User
       throw new Error('Invalid role');
     }
 
-    if (update.testType && !Object.values(UserTestType).includes(update.testType as UserTestType)) {
+    if (!Array.isArray(update.testType) || update.testType.some(t => !Object.values(UserTestType).includes(t))) {
       throw new Error('Invalid test type');
     }
 
@@ -235,9 +226,10 @@ export const updateUser: (id: string, update: Partial<UserBody>) => Promise<User
     const updated = await repo.updateUserById(id, update);
     if (!updated) return null;
 
-    const obj = updated.toObject();
-    return {
-      // id: updated.id.toString(),
-      ...obj,
-    };
+    // const obj = updated.toObject();
+    // return {
+    //   // id: updated.id.toString(),
+    //   ...obj,
+    // };
+    return updated.toJSON() as User;
   };
