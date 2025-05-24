@@ -21,7 +21,7 @@ MiniLabRouter.get('/v1/test_verifyJWT', routeLogger, verifyJWT, async (req, res)
 // employee 相關 routes
 MiniLabRouter.get('/v1/user', routeLogger, verifyJWT, MiniLabController.handleGetUser)
 MiniLabRouter.get('/v1/users', routeLogger, verifyJWT, requireManagerRole, MiniLabController.handleGetUsers)
-MiniLabRouter.get('/v1/user/:id', routeLogger, verifyJWT, MiniLabController.handleGetUserById);
+MiniLabRouter.get('/v1/user/:id', routeLogger, verifyJWT, requireManagerRole, MiniLabController.handleGetUserById);
 MiniLabRouter.post('/v1/user', routeLogger, verifyJWT, requireManagerRole, MiniLabController.handleRegisterUser);
 MiniLabRouter.delete('/v1/user/:id', routeLogger, verifyJWT, requireManagerRole, MiniLabController.handleDeleteUser);
 MiniLabRouter.put('/v1/user/:id', routeLogger, verifyJWT, MiniLabController.handleUpdateUser);
