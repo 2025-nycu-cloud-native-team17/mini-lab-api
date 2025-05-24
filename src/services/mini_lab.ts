@@ -215,7 +215,7 @@ export const updateUser: (id: string, update: Partial<UserBody>) => Promise<User
       throw new Error('Invalid role');
     }
 
-    if (!Array.isArray(update.testType) || update.testType.some(t => !Object.values(UserTestType).includes(t))) {
+    if (update.testType && (!Array.isArray(update.testType) || update.testType.some(t => !Object.values(UserTestType).includes(t)))) {
       throw new Error('Invalid test type');
     }
 
