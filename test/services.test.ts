@@ -172,8 +172,8 @@ describe('mini_lab service', () => {
 
   // --- Users CRUD ---
   describe('getUsers / getUserById', () => {
-    it('getUsers 要 map toObject()', async () => {
-      const docs = [ { toObject: () => ({_id:'1', name:'A'}) } ] as any
+    it('getUsers 要 map toJSON()', async () => {
+      const docs = [ { toJSON: () => ({id:'1', name:'A'}) } ] as any
       vi.mocked(repo.findAllUsers).mockResolvedValue(docs)
       const out = await service.getUsers()
       expect(out).toEqual([{ id:'1', name:'A' }])
@@ -183,7 +183,7 @@ describe('mini_lab service', () => {
       await expect(service.getUserById('x')).resolves.toBeNull()
     })
     it('getUserById 找到要 map', async () => {
-      const doc = { toObject: () => ({_id:'2', userId:'u', name:'B'}) } as any
+      const doc = { toJSON: () => ({id:'2', userId:'u', name:'B'}) } as any
       vi.mocked(repo.findUserById).mockResolvedValue(doc)
       const out = await service.getUserById('x')
       expect(out).toEqual({ id:'2', userId:'u', name:'B' })
@@ -191,28 +191,62 @@ describe('mini_lab service', () => {
   })
 
   describe('addUser', () => {
-    const good: UserBody = { userId:'u', name:'N', email:'e@x', password:'pw', role:UserRole.MEMBER, testType:UserTestType.TEST1, status:UserStatus.ACTIVE, inCharging:[], refreshToken:'' }
-    it('缺欄位要丟錯', async () => {
-      await expect(service.addUser({} as any)).rejects.toThrow('Email, password, and name are required')
-    })
-    it('role/testType/status 驗證', async () => {
-      await expect(service.addUser({ ...good, role:'x' as any })).rejects.toThrow('Invalid role')
-      await expect(service.addUser({ ...good, testType:'x' as any })).rejects.toThrow('Invalid test type')
-      await expect(service.addUser({ ...good, status:'x' as any })).rejects.toThrow('Invalid status')
-    })
-    it('重複 email 要丟錯', async () => {
-      vi.mocked(repo.findUserByEmail).mockResolvedValue({} as any)
-      await expect(service.addUser(good)).rejects.toThrow('User already exists')
-    })
-    it('成功要呼 createUser 並回傳', async () => {
-      vi.mocked(repo.findUserByEmail).mockResolvedValue(null)
-      const saved = { id:'3', toObject:() => ({}) } as any
-      vi.mocked(repo.createUser).mockResolvedValue(saved)
-      const out = await service.addUser(good)
-      expect(repo.createUser).toHaveBeenCalledWith(good)
-      expect(out).toEqual({ id:'3', ...good })
-    })
-  })
+  const good: UserBody = {
+    userId: 'u',
+    name: 'N',
+    email: 'e@x',
+    password: 'pw',
+    role: UserRole.MEMBER,
+    testType: [UserTestType.TEST1, UserTestType.TEST2],
+    status: UserStatus.ACTIVE,
+    inCharging: [],
+    refreshToken: ''
+  };
+
+  it('缺欄位要丟錯', async () => {
+    await expect(service.addUser({} as any)).rejects.toThrow('Email, password, and name are required');
+  });
+
+  it('role/testType/status 驗證', async () => {
+    await expect(service.addUser({ ...good, role: 'x' as any })).rejects.toThrow('Invalid role');
+    await expect(service.addUser({ ...good, testType: ['x'] as any })).rejects.toThrow('Invalid test type');
+    await expect(service.addUser({ ...good, status: 'x' as any })).rejects.toThrow('Invalid status');
+  });
+
+  it('重複 email 要丟錯', async () => {
+    vi.mocked(repo.findUserByEmail).mockResolvedValue({} as any);
+    await expect(service.addUser(good)).rejects.toThrow('User already exists');
+  });
+
+  it('成功要呼 createUser 並回傳', async () => {
+    vi.mocked(repo.findUserByEmail).mockResolvedValue(null);
+
+    const saved = {
+      toJSON: () => ({
+        id: '3',
+        userId: good.userId,
+        name: good.name,
+        email: good.email,
+        password: good.password,
+        role: good.role,
+        testType: good.testType,
+        status: good.status,
+        inCharging: good.inCharging,
+        refreshToken: good.refreshToken
+      })
+    } as any;
+
+    vi.mocked(repo.createUser).mockResolvedValue(saved);
+
+    const out = await service.addUser(good);
+    
+    expect(repo.createUser).toHaveBeenCalledWith(good);
+    expect(out).toEqual({
+      id: '3',
+      ...good
+    });
+  });
+});
 
   describe('deleteUser', () => {
     it('deleteUser 找不到要丟錯', async () => {
@@ -226,21 +260,57 @@ describe('mini_lab service', () => {
   })
 
   describe('updateUser', () => {
-    const goodUpdate = { name:'Z', status:UserStatus.PENDING }
+    const goodUpdate = {
+      name: 'Z',
+      status: UserStatus.PENDING
+    };
+
     it('updateUser role/testType/status 驗證', async () => {
-      await expect(service.updateUser('x',{ role:'x' as any })).rejects.toThrow('Invalid role')
-      await expect(service.updateUser('x',{ testType:'x' as any })).rejects.toThrow('Invalid test type')
-      await expect(service.updateUser('x',{ status:'x' as any })).rejects.toThrow('Invalid status')
-    })
+      await expect(service.updateUser('x', { role: 'x' as any })).rejects.toThrow('Invalid role');
+      await expect(service.updateUser('x', { testType: ['x'] as any })).rejects.toThrow('Invalid test type');
+      await expect(service.updateUser('x', { status: 'x' as any })).rejects.toThrow('Invalid status');
+    });
+
     it('找不到回 null', async () => {
-      vi.mocked(repo.updateUserById).mockResolvedValue(null)
-      await expect(service.updateUser('x',goodUpdate)).resolves.toBeNull()
-    })
-    it('成功要 map toObject()', async () => {
-      const doc = { toObject: () => ({ id:'4', ...goodUpdate }) } as any
-      vi.mocked(repo.updateUserById).mockResolvedValue(doc)
-      const out = await service.updateUser('x', goodUpdate)
-      expect(out).toEqual({ id:'4', ...goodUpdate })
-    })
-  })
+      vi.mocked(repo.updateUserById).mockResolvedValue(null);
+      await expect(service.updateUser('x', goodUpdate)).resolves.toBeNull();
+    });
+
+    it('成功要 map toJSON()', async () => {
+      const doc = {
+        toJSON: () => ({
+          id: '4',
+          userId: 'U004',
+          name: goodUpdate.name,
+          email: 'user4@example.com',
+          password: 'pw',
+          role: UserRole.MEMBER,
+          testType: [UserTestType.TEST1],
+          status: goodUpdate.status,
+          inCharging: [],
+          refreshToken: '',
+          busywindow: []
+        })
+      } as any;
+
+      vi.mocked(repo.updateUserById).mockResolvedValue(doc);
+
+      const out = await service.updateUser('x', goodUpdate);
+
+      expect(out).toEqual({
+        id: '4',
+        userId: 'U004',
+        name: goodUpdate.name,
+        email: 'user4@example.com',
+        password: 'pw',
+        role: UserRole.MEMBER,
+        testType: [UserTestType.TEST1],
+        status: goodUpdate.status,
+        inCharging: [],
+        refreshToken: '',
+        busywindow: []
+      });
+    });
+  });
+
 })

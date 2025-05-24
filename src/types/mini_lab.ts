@@ -26,30 +26,34 @@ export type User = {
     email: string //employee信箱(公司分發)
     password: string //employee密碼(假定在這系統不能自行改密碼)
     role: UserRole //employee角色(組長/組員)
-    testType: UserTestType //employee測試類型
+    testType: UserTestType[] //employee測試類型
     status: UserStatus //employee狀態
-
     inCharging: string[] //employee負責的測試
     refreshToken: string //refresh token
+    busywindow: number[][] //員工忙碌時間區間
 }
 export type UserBody = Omit<User, 'id'>
 
 // data type for task
 export enum TaskStatus {
-    PENDING = 'pending',
-    IN_PROGRESS = 'in_progress',
-    COMPLETED = 'completed',
+    PENDING = 'pending', //待分配
+    ASSIGNED = 'assigned', //已分配
+    CANCELLED = 'cancelled', //已取消
+    IN_PROGRESS = 'in_progress', //進行中
+    COMPLETED = 'completed', //已完成
 }
 
 export type Task = {
     id: string
+    // taskId: string
     name: string
     description: string
     testType: string
-    inCharging: string[]
-    createAt: Date
-    dueDate: Date
+    inCharging: string
     status: TaskStatus
+    duration: number
+    earliestStart: number
+    deadline: number
 }
 export type TaskBody = Omit<Task, 'id'>
 
@@ -63,11 +67,22 @@ export enum MachineStatus {
 
 export type Machine = {
     id: string
+    machineId: string
     name: string
     description: string
-    testType: string
+    testType: string[]
     count: number
     status: MachineStatus
+    busywindow: number[][] //機台忙碌時間區間
 } 
 export type MachineBody = Omit<Machine, 'id'>
+
+export type Assignment ={
+    assignmentId: string
+    taskId: string
+    machineId: string
+    userId: string
+    startTime: number
+    endTime: number
+}
   

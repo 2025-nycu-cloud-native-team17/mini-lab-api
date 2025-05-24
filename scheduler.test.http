@@ -1,0 +1,46 @@
+POST http://localhost:8000/schedule_with_busy
+Content-Type: application/json
+
+{
+    "workers": [
+        {
+            "id": 101,
+            "types": ["A", "B"],
+            "busy_windows": [[20, 36], [44, 60]]
+        }
+    ],
+    "machines": [
+        {
+            "id": 201,
+            "types": ["A", "B"],
+            "busy_windows": [[20, 36], [44, 60]]
+        }
+    ],
+    "tasks": [
+        {
+            "id": 1,
+            "type": "A",
+            "duration": 10,
+            "earliest_start": 0,
+            "deadline": 100
+        }
+    ]
+}
+
+###
+POST http://localhost:8000/schedule_with_busy
+Content-Type: application/json
+
+{
+  "workers": [
+    { "id": 1, "types": ["A", "B"], "busy_windows": [[3, 6]] }
+  ],
+  "machines": [
+    { "id": 1, "types": ["A"], "busy_windows": [[10, 12]] }
+  ],
+  "tasks": [
+    { "id": 101, "type": "A", "duration": 2, "earliest_start": 0, "deadline": 15 }
+  ]
+}
+
+

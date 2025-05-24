@@ -34,7 +34,7 @@ const miniLabUserSchema = new mongoose.Schema(
       required: true
     },
     testType: {
-      type: String,
+      type: [String],
       enum: Object.values(UserTestType), // Use UserTestType enum
       required: true
     },
@@ -50,6 +50,10 @@ const miniLabUserSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       default: ''
+    },
+    busywindow: {
+      type: [[Number]],
+      required: true
     }
   },
   {
@@ -58,9 +62,18 @@ const miniLabUserSchema = new mongoose.Schema(
   }
 )
 miniLabUserSchema.set('toJSON', {
-  virtuals: true,
-  versionKey: false
-})
+  virtuals: true,          // 開啟虛擬屬性（如 id）
+  versionKey: false,       // 移除 __v
+  transform: (_, ret) => {
+    ret.id = ret._id.toString(); // 把 _id 轉成 id 欄位
+    delete ret._id;
+    delete ret.password;         // ❗移除敏感資訊
+    delete ret.refreshToken;     // ❗移除 refresh token
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 
 //name: 機器名稱
@@ -70,6 +83,11 @@ miniLabUserSchema.set('toJSON', {
 //status: 機器狀態
 const miniLabMachineSchema = new mongoose.Schema(
   {
+    machineId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     name: { 
       type: String,
       required: true
@@ -79,7 +97,7 @@ const miniLabMachineSchema = new mongoose.Schema(
       default: ''
     },
     testType: {
-      type: String,
+      type: [String],
       required: true
     },
     count: {
@@ -90,6 +108,10 @@ const miniLabMachineSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(MachineStatus), // Use MachineStatus enum
       required: true
+    },
+    busywindow: {
+      type: [[Number]],
+      required: true
     }
   },
   {
@@ -99,8 +121,15 @@ const miniLabMachineSchema = new mongoose.Schema(
 )
 miniLabMachineSchema.set('toJSON', {
   virtuals: true,
-  versionKey: false
-})
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 //name: 任務名稱
 //description: 任務描述
@@ -109,6 +138,11 @@ miniLabMachineSchema.set('toJSON', {
 //status: 任務狀態
 const miniLabTaskSchema = new mongoose.Schema(
   {
+    // taskId: {
+    //   type: String,
+    //   required: true,
+    //   unique: true
+    // },
     name: {
       type: String,
       required: true
@@ -123,11 +157,25 @@ const miniLabTaskSchema = new mongoose.Schema(
     },
     inCharging: {
       type: [String],
-      required: true
+      // required: true
+      default: []
     },
     status: {
       type: String,
       enum: Object.values(TaskStatus), // Use TaskStatus enum
+      // required: true
+      default: TaskStatus.PENDING // 預設為 PENDING
+    },
+    duration: {
+      type: Number,
+      required: true
+    },
+    earliest_start: {
+      type: Number,
+      required: true
+    },
+    deadline: {
+      type: Number,
       required: true
     }
   },
@@ -138,9 +186,63 @@ const miniLabTaskSchema = new mongoose.Schema(
 )
 miniLabTaskSchema.set('toJSON', {
   virtuals: true,
-  versionKey: false
-})
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();  // 加上 id 欄位
+    delete ret._id;               // 移除 _id 原始欄位
+    delete ret.createdAt;         // 移除自動加的欄位
+    delete ret.updatedAt;
+    return ret;
+  }
+});
+
+const miniLabAssignmentSchema = new mongoose.Schema(
+  {
+    assignment_id: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    task_id: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    worker_id: {
+      type: String,
+      required: true
+    },
+    machine_id: {
+      type: String,
+      required: true
+    },
+    start: {
+      type: Number,
+      required: true
+    },
+    end: {
+      type: Number,
+      required: true
+    }
+  },
+  {
+    timestamps: true,
+    collection: "MiniLabAssignments" // Avoid confusion
+  }
+)
+miniLabAssignmentSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();   // 統一提供 id 欄位
+    delete ret._id;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 export const MiniLabUserModel = mongoose.models.MiniLabUser || mongoose.model<UserBody>('MiniLabUser', miniLabUserSchema);
 export const MiniLabMachineModel = mongoose.models.MiniLabMachine || mongoose.model('MiniLabMachine', miniLabMachineSchema);
 export const MiniLabTaskModel = mongoose.models.MiniLabTask || mongoose.model('MiniLabTask', miniLabTaskSchema);
+export const MiniLabAssignmentModel = mongoose.models.MiniLabAssignment || mongoose.model('MiniLabAssignment', miniLabAssignmentSchema);
