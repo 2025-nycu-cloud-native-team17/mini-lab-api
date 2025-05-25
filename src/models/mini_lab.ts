@@ -198,15 +198,20 @@ miniLabTaskSchema.set('toJSON', {
 
 const miniLabAssignmentSchema = new mongoose.Schema(
   {
-    assignment_id: {
-      type: String,
-      required: true,
-      unique: true
-    },
+    // assignment_id: {
+    //   type: String,
+    //   required: true,
+    //   unique: true
+    // },
     task_id: {
       type: String,
       required: true,
       unique: true
+    },
+    task_name: {
+      type: String,
+      required: true
+      // unique: true
     },
     worker_id: {
       type: String,

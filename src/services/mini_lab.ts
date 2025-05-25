@@ -3,9 +3,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import * as repo from '../repo/mini_lab'
-import { User, UserBody, Machine, MachineBody, Task, TaskBody } from '../types/mini_lab'
+import { User, UserBody, Machine, MachineBody, Task, TaskBody, Assignment, AssignmentBody } from '../types/mini_lab'
 import { UserRole, UserTestType, UserStatus } from '../types/mini_lab'
 import { appConfig } from '../index';
+import axios from 'axios'
+import { machine } from 'os';
 
 
 export const getMachines: () => Promise<Array<Machine>> = async () => {
@@ -59,10 +61,126 @@ export const deleteTaskById: (id: string) => Promise<ModifyResult<Task>> = async
   return result
 }
 
-// export const scheduleTask: (id: string) => Promise<ModifyResult<Task>> = async (id) => {
-//   const result = await repo.scheduleTask(id)
-//   return result
-// }
+// 送出排程請求:
+//   - 從資料庫取出上一輪的排程結果，保留startTime <= now的assignments，並更新assignment相應之user, machine 的busy_windows
+// 收到response:
+//   - assignment內的userId, machineId, taskId映射回userId, machineId, taskname(可讀性高)
+//   - 接回送出請求前保留的assignments，合併成新的assignments
+  
+
+export const requestScheduler = async (): Promise<{ makespan: number; assignments: AssignmentBody[] }> => {
+  const now = Math.floor(Date.now() / 1000)
+  // const now = 0
+
+  // 1. 從資料庫取出上一輪排程結果，保留已開始任務並更新 busy_windows
+  const previousDocs = await repo.findAllAssignments()
+  const previousAssignments = previousDocs.map(doc => doc.toJSON() as AssignmentBody)
+  const keepAssignments: AssignmentBody[] = []
+  const excludedTaskIds = new Set<string>()
+  const extraBusyWindows = {
+    users: new Map<string, [number, number][]>(),
+    machines: new Map<string, [number, number][]>()
+  }
+
+  for (const a of previousAssignments) {
+    if (a.end <= now) continue // 如果任務已結束，則不保留
+    if (a.start <= now) {
+      keepAssignments.push(a)
+      excludedTaskIds.add(a.task_id)
+      if (!extraBusyWindows.users.has(a.worker_id))
+        extraBusyWindows.users.set(a.worker_id, [])
+      if (!extraBusyWindows.machines.has(a.machine_id))
+        extraBusyWindows.machines.set(a.machine_id, [])
+      extraBusyWindows.users.get(a.worker_id)!.push([a.start, a.end])
+      extraBusyWindows.machines.get(a.machine_id)!.push([a.start, a.end])
+    }
+  }
+
+  // 2. 取得最新資料
+  const users = await repo.findAllUsers()
+  const machines = await repo.findAllMachines()
+  // const tasks = await repo.findAllTasks()
+  const tasks = (await repo.findAllTasks()).filter(t => !excludedTaskIds.has(t.id.toString()))
+
+
+  // 建立 id ↔️ userId/machineId/taskName 對照表
+  const userIdMap = new Map(users.map(u => [u.id.toString(), u.userId]))
+  const machineIdMap = new Map(machines.map(m => [m.id.toString(), m.machineId]))
+  const taskNameMap = new Map(tasks.map(t => [t.id.toString(), t.name]))
+
+  // 3. 發送 scheduler 請求
+  const requestPayload = {
+    workers: users.map(user => ({
+      id: user.id.toString(),
+      types: user.testType,
+      busy_windows: [
+        ...(user.busywindow || []),
+        ...(extraBusyWindows.users.get(user.id.toString()) || [])
+      ]
+    })),
+    machines: machines.map(machine => ({
+      id: machine.id.toString(),
+      types: machine.testType,
+      busy_windows: [
+        ...(machine.busywindow || []),
+        ...(extraBusyWindows.machines.get(machine.id.toString()) || [])
+      ]
+    })),
+    tasks: tasks.map(task => ({
+      id: task.id.toString(),
+      type: task.testType,
+      duration: task.duration,
+      earliest_start: task.earliest_start,
+      deadline: task.deadline
+    }))
+  }
+
+  const response = await axios.post('http://mini-lab-scheduler:8000/schedule_with_busy', requestPayload)
+  const newAssignmentsRaw = response.data.assignments
+  const makespan = response.data.makespan
+
+  // 4. 將 id 映射為 userId, machineId, taskName
+  const newAssignments: AssignmentBody[] = []
+  for (const a of newAssignmentsRaw) {
+    const userId = userIdMap.get(a.worker_id)
+    const machineId = machineIdMap.get(a.machine_id)
+    const taskName = taskNameMap.get(a.task_id)
+
+    if (userId && machineId && taskName) {
+      newAssignments.push({
+        assignmentId: a.assignment_id,
+        task_id: a.task_id,
+        task_name: taskName,
+        worker_id: userId,
+        machine_id: machineId,
+        start: a.start,
+        end: a.end
+      })
+
+      // 更新任務狀態與負責人
+      await repo.updateTaskById(a.task_id, {
+        status: 'assigned',
+        inCharging: [userId, machineId]
+      })
+    }
+  }
+
+  // 5. 合併保留與新排程後儲存至資料庫
+  const mergedAssignments = [...keepAssignments, ...newAssignments]
+  await repo.deleteAssignments()
+  const insertResult = await repo.addAssignments(mergedAssignments)
+
+  return {
+    makespan,
+    assignments: insertResult
+  }
+}
+
+export const getAssignments = async (): Promise<Assignment[]> => {
+  const docs = await repo.findAllAssignments();
+  return docs.map(doc => doc.toJSON() as Assignment);
+};
+
 //-----------------------User---------------------- //
 type Token = {
   accessToken: string;
@@ -138,22 +256,11 @@ export const refreshAccessToken = async (refreshToken: string): Promise<string> 
   });
 };
 
-// export const getUser = async (): Promise<User[]> => {
-//   const docs = await repo.findAllUsers();
-
-//   return docs.map(doc => {
-//     const { _id, password, email, role, status, refreshToken, ...rest } = doc.toObject();
-//     return {
-//       id: _id.toString(),
-//       ...rest,
-//     };
-//   });
-// };
-
 export const getUsers = async (): Promise<User[]> => {
   const docs = await repo.findAllUsers();
   return docs.map(doc => doc.toJSON() as User);
 };
+
 
 export const getUserById = async (id: string): Promise<User | null> => {
   const doc = await repo.findUserById(id);

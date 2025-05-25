@@ -52,7 +52,7 @@ export type Task = {
     inCharging: string
     status: TaskStatus
     duration: number
-    earliestStart: number
+    earliest_start: number
     deadline: number
 }
 export type TaskBody = Omit<Task, 'id'>
@@ -79,10 +79,11 @@ export type MachineBody = Omit<Machine, 'id'>
 
 export type Assignment ={
     assignmentId: string
-    taskId: string
-    machineId: string
-    userId: string
-    startTime: number
-    endTime: number
+    task_id: string
+    task_name: string
+    worker_id: string
+    machine_id: string
+    start: number
+    end: number
 }
-  
+export type AssignmentBody = Omit<Assignment, 'id'>

@@ -1,5 +1,5 @@
 ### manager
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzFiYzZhMmNkZGMzNDIwYTZiMTQwZCIsImVtYWlsIjoidXNlcjNAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ4MDkwMDg0LCJleHAiOjE3NDgwOTM2ODR9.hLsfYdML5RZndbldFblzDe_r8uVZju6ng4Bmxz8qkdQ
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzJjOGU3MmNjOTI5Y2M0YzZiMTQwYiIsImVtYWlsIjoidXNlcjFAZXhhbXBsZS5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0ODE1ODgwOCwiZXhwIjoxNzQ4MTYyNDA4fQ.YPHs4xG195cIZhG5uKLZ64xyu7n1zoiy4_vi0E-WQLU
 
 @refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzA4NGIyNGE5ZjUxZTI5MGJmNjYzOCIsImVtYWlsIjoidXNlcjRAZXhhbXBsZS5jb20iLCJyb2xlIjoibWVtYmVyIiwiaWF0IjoxNzQ4MDg1OTc0LCJleHAiOjE3NDgxNzIzNzR9.lGRscht6iW9rKoA4UJy_E4RH_OtKfnDyZ20chpxu3cE
 ### leader
@@ -14,8 +14,8 @@ POST http://localhost:8888/api/v1/login
 Content-Type: application/json
 
 {
-  "email": "user3@example.com",
-  "password": "user3"
+  "email": "user1@example.com",
+  "password": "user1"
 }
 
 ###
@@ -39,7 +39,7 @@ GET http://localhost:8888/api/v1/users
 Authorization: Bearer {{accessToken}}
 
 ###
-GET http://localhost:8888/api/v1/user/6831b0e3ae62506afb6b140c
+GET http://localhost:8888/api/v1/user/6831c1761edf172cbe6b140d
 Authorization: Bearer {{accessToken}}
 
 ###
@@ -127,12 +127,12 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "name": "Temp Ramp Test",
+  "name": "444",
   "description": "Run temperature ramp test",
-  "testType": "Thermal Testing",
-  "duration": 1800,
-  "earliest_start": 1750676400,
-  "deadline": 1750678200
+  "testType": "Electrical Testing",
+  "duration": 1000,
+  "earliest_start": 2000,
+  "deadline": 20000
 }
 
 ###
@@ -154,4 +154,12 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8888/api/v1/tasks/6831bdada1f671c319c48ef9
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8888/api/v1/assignments/schedule
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8888/api/v1/assignments
 Authorization: Bearer {{accessToken}}
