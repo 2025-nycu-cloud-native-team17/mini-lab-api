@@ -4,21 +4,21 @@ Content-Type: application/json
 {
     "workers": [
         {
-            "id": 101,
+            "id": "101",
             "types": ["A", "B"],
             "busy_windows": [[20, 36], [44, 60]]
         }
     ],
     "machines": [
         {
-            "id": 201,
+            "id": "201",
             "types": ["A", "B"],
             "busy_windows": [[20, 36], [44, 60]]
         }
     ],
     "tasks": [
         {
-            "id": 1,
+            "id": "1",
             "type": "A",
             "duration": 10,
             "earliest_start": 0,

@@ -260,12 +260,21 @@ export const handleDeleteTaskById = async (req: Request, res: Response) => {
   }
 };
 
-// export const handleScheduleTask = async (req: Request, res: Response) => {
-//   try {
-//     const result = await MiniLabService.scheduleTask(req.body);
-//     return res.status(201).json(result);
-//   } catch (error) {
-//     return res.status(500).json({ msg: 'Internal server error', error });
-//   }
-// };
+export const handleScheduleTask = async (req: Request, res: Response) => {
+  try {
+    const result = await MiniLabService.requestScheduler();
+    return res.status(201).json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: 'Internal server error', error });
+  }
+};
+
+export const handleGetAssignments = async (req: Request, res: Response) => {
+  try {
+    const result = await MiniLabService.getAssignments();
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ msg: 'Internal server error', error });
+  }
+};
 

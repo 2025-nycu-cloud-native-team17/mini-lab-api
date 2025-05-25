@@ -1,9 +1,10 @@
-import { Document, model, Schema, ModifyResult, UpdateQuery } from 'mongoose'
+import { Document, model, Schema, ModifyResult, UpdateQuery, DeleteResult } from 'mongoose'
 
-import { MiniLabUserModel, MiniLabMachineModel, MiniLabTaskModel } from '../models/mini_lab'
+import { MiniLabUserModel, MiniLabMachineModel, MiniLabTaskModel, MiniLabAssignmentModel } from '../models/mini_lab'
 import { Machine, MachineBody } from '../types/mini_lab'
 import { Task, TaskBody } from '../types/mini_lab'
 import { User, UserBody } from '../types/mini_lab'
+import { Assignment, AssignmentBody } from '../types/mini_lab'
 
 // ----------------------User---------------------- //
 export interface MiniLabUserDocument extends Document, UserBody {}
@@ -53,3 +54,15 @@ export const updateTaskById: (id: string, update: UpdateQuery<TaskBody>) => Prom
 
 export const deleteTaskById: (id: string) => Promise<ModifyResult<Task>> = (id) =>
   MiniLabTaskModel.findByIdAndDelete(id).exec()
+
+// 刪除所有排程紀錄
+export const deleteAssignments: () => Promise<DeleteResult> = () =>
+  MiniLabAssignmentModel.deleteMany({}).exec()
+
+// 批量新增排程紀錄
+export const addAssignments: (assignmentBodies: AssignmentBody[]) => Promise<Assignment[]> = (assignmentBodies) =>
+  MiniLabAssignmentModel.insertMany(assignmentBodies)
+
+export const findAllAssignments: () => Promise<Document<Assignment>[]> = () =>
+  MiniLabAssignmentModel.find().exec()
+
