@@ -32,6 +32,7 @@ scrape_configs:
             body:     body
             params:   params
             query:    query
+          drop_malformed: true
 
       - labels:
           level:
