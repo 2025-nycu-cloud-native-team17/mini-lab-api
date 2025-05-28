@@ -35,16 +35,9 @@ scrape_configs:
           drop_malformed: true
 
       - labels:
-          level:
           whom:
           method:
-          route:
           url:
-          time:
-          body:
-          params:
-          query:
-          headers:
           
       - timestamp:
           source: time

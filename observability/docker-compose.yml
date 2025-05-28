@@ -21,6 +21,7 @@ services:
       - monitoring
     container_name: loki
     volumes:
+      - ./loki.yml:/etc/loki/loki.yml:ro
       - loki-data:/loki
 
   promtail:
